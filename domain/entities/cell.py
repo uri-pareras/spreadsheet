@@ -8,11 +8,36 @@ class CellIdentifier():
     """
     This class represents a cell identifier.
     """
-    def __init__(self, coordinate: tuple):
+    def __init__(self, coordinate: str):
         """
         This method initializes the cell identifier.
         """
-        self._coordinate = coordinate
+        #Check if the coordinate is valid
+        if not isinstance(coordinate, str):
+            raise ValueError("The coordinate must be a string.")
+        if self.coordinate_is_valid(coordinate):
+            self._coordinate = coordinate
+
+    def coordinate_is_valid(coordinate: str):
+        """
+        This method checks if the coordinate is valid.
+        Returns True if it is valid and False otherwise.
+        """
+        for i, c in enumerate(coordinate):
+            if c.isdigit():
+                first_number_index = i
+                break
+        if first_number_index == 0:
+            raise ValueError("The column must be a string of letters.")
+        if first_number_index == len(coordinate) - 1:
+            raise ValueError("The row must be a string of numbers.")
+        column = coordinate[:first_number_index]
+        row = coordinate[first_number_index:]
+        if not column.isalpha():
+            raise ValueError("The column must be a string of letters.")
+        if not row.isdigit():
+            raise ValueError("The row must be a string of numbers.")
+        return True
     
     @property
     def coordinate(self):
@@ -26,11 +51,10 @@ class CellIdentifier():
         """
         This method sets the row.
         """
-        if not isinstance(coordinate[0], str):
-            raise ValueError("The row must be a string.")
-        if not isinstance(coordinate[1], int):
-            raise ValueError("The row must be an integer.")
-        self._coordinate = coordinate
+        if not isinstance(coordinate, str):
+            raise ValueError("The coordinate must be a string.")
+        if self.coordinate_is_valid(coordinate):
+            self._coordinate = coordinate
 
 class Cell():
     """
