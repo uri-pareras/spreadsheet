@@ -3,6 +3,7 @@ This file contains the Cell class.
 """
 
 from content import Content, TextualContent, NumericalContent
+import re
 
 class CellIdentifier():
     """
@@ -17,6 +18,11 @@ class CellIdentifier():
             raise ValueError("The coordinate must be a string.")
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
+            
+            #Get the row and the column
+            position = re.search(r"\d", s1)
+            self._column = coordinate[:position.start()]
+            self._row = coordinate[position.start():]
 
     def coordinate_is_valid(coordinate: str):
         """
@@ -56,6 +62,20 @@ class CellIdentifier():
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
 
+    @property
+    def column(self):
+        """
+        This method returns the column.
+        """
+        return self._column
+    
+    @property
+    def row(self):
+        """
+        This method returns the row.
+        """
+        return self._row
+
 class Cell():
     """
     This class represents a cell.
@@ -66,7 +86,7 @@ class Cell():
         """
         self._identifier = identifier
         self._content = content
-        self._dependencies = []
+        self._depends_on_me = []
     
     @property
     def identifier(self):
