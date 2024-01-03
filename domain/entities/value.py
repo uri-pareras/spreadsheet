@@ -16,6 +16,7 @@ class Value(abc.ABC):
         """
         self._value = value
 
+    @abc.abstractmethod
     @property
     def value(self):
         """
@@ -23,6 +24,7 @@ class Value(abc.ABC):
         """
         return self._value
     
+    @abc.abstractmethod
     @value.setter
     def value(self, value):
         """

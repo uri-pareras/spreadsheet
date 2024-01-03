@@ -9,6 +9,7 @@ from cell import CellIdentifier
 import abc
 
 class Function(abc.ABC):
+    @abc.abstractmethod
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -16,6 +17,7 @@ class Function(abc.ABC):
         self._arguments = arguments
         self._values = self.obtain_values_from_arguments(arguments)
 
+    @abc.abstractmethod
     def obtain_values_from_arguments(arguments):
         """
         This method obtains the values from the arguments.
@@ -25,6 +27,7 @@ class Function(abc.ABC):
             values = values + argument.get_values_as_argument()  #List concatenation
         return values
     
+    @abc.abstractmethod
     def compute(self):
         """
         This method computes the function.
