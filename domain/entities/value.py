@@ -8,12 +8,15 @@ from operand import Operand
 
 class Value(abc.ABC):
     """
-    This class represents a value.
+    This is an abstract class that represents a value.
     """
     @abc.abstractmethod
     def __init__(self, value):
         """
         This method initializes the value.
+
+        Keyword arguments:
+        value -- the value (any)
         """
         self._value = value
 
@@ -21,7 +24,7 @@ class Value(abc.ABC):
     @property
     def value(self):
         """
-        This method returns the value.
+        Getter for value.
         """
         return self._value
     
@@ -29,31 +32,35 @@ class Value(abc.ABC):
     @value.setter
     def value(self, value):
         """
-        This method sets the value.
+        Setter for value.
         """
         self._value = value
 
 class TextualValue(Value):
     """
-    This class represents a textual value.
+    This is a concrete implementation of the Value class.
+    It represents a textual value.
     """
     def __init__(self, value):
         """
         This method initializes the textual value.
+
+        Keyword arguments:
+        value -- the value of the textual value (string)
         """
         super().__init__(value)
     
     @property
     def value(self):
         """
-        This method returns the textual value.
+        Getter for value.
         """
         return self._value
     
     @value.setter
     def value(self, value):
         """
-        This method sets the textual value.
+        Setter for value.
         """
         if not isinstance(value, str):
             raise ValueError("The value must be a string.")
@@ -61,25 +68,30 @@ class TextualValue(Value):
     
 class NumericalValue(Value, Argument, Operand):
     """
-    This class represents a numerical value.
+    This is a concrete implementation of the Value class.
+    It represents a numerical value.
+
     """
     def __init__(self, value):
         """
         This method initializes the numerical value.
+
+        Keyword arguments:
+        value -- the value of the numerical value (number)
         """
         super().__init__(value)
     
     @property
     def value(self):
         """
-        This method returns the numerical value.
+        Getter for value
         """
         return self._value
     
     @value.setter
     def value(self, value):
         """
-        This method sets the numerical value.
+        setter for value
         """
         if not isinstance(value, (int, float)):
             raise ValueError("The value must be a number.")
@@ -88,11 +100,17 @@ class NumericalValue(Value, Argument, Operand):
     def get_values_as_argument(self):
         """
         This method returns a list of the value as an argument.
+
+        Keyword arguments:
+        return -- the value as an argument (list)
         """
         return [self._value]
     
     def get_value_as_operand(self):
         """
         This method returns the value as an operand.
+
+        Keyword arguments:
+        return -- the value as an operand (Value)
         """
         return self._value

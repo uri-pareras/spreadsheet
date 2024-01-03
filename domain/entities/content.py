@@ -7,12 +7,18 @@ from value import Value, TextualValue, NumericalValue
 
 class Content(abc.ABC):
     """
-    This class represents a content.
+    This is an abstract class that represents a content.
     """
     @abc.abstractmethod
     def __init__(self, value: Value):
         """
         This method initializes the content.
+
+        Keyword arguments:
+        value -- the value of the content (Value)
+
+        Attributes:
+        _value -- the value of the content (Value)
         """
         self._value = value
 
@@ -20,7 +26,7 @@ class Content(abc.ABC):
     @property
     def value(self):
         """
-        This method returns the value.
+        Getter for value.
         """
         return self._value
     
@@ -28,7 +34,7 @@ class Content(abc.ABC):
     @value.setter
     def value(self, value):
         """
-        This method sets the value.
+        Setter for value.
         """
         if not isinstance(value, Value):
             raise ValueError("The value must be a Value.")
@@ -36,25 +42,32 @@ class Content(abc.ABC):
 
 class TextualContent(Content):
     """
-    This class represents a textual content.
+    This is a concrete implementation of the Content class.
+    It represents a textual content.
     """
     def __init__(self, value: TextualValue):
         """
         This method initializes the textual content.
+
+        Keyword arguments:
+        value -- the value of the textual content (TextualValue)
+
+        Attributes:
+        _value -- the value of the textual content (TextualValue)
         """
         super().__init__(value)
     
     @property
     def value(self):
         """
-        This method returns the textual value.
+        Getter for value.
         """
         return self._value
     
     @value.setter
     def value(self, value):
         """
-        This method sets the textual value.
+        Setter for value.
         """
         if not isinstance(value, TextualValue):
             raise ValueError("The value must be a TextualValue.")
@@ -62,25 +75,32 @@ class TextualContent(Content):
 
 class NumericalContent(Content):
     """
-    This class represents a numerical content.
+    This is a concrete implementation of the Content class.
+    It represents a numerical content.
     """
     def __init__(self, value: NumericalValue):
         """
         This method initializes the numerical content.
+
+        Keyword arguments:
+        value -- the value of the numerical content (NumericalValue)
+
+        Attributes:
+        _value -- the value of the numerical content (NumericalValue)
         """
         super().__init__(value)
     
     @property
     def value(self):
         """
-        This method returns the numerical value.
+        Getter for value.
         """
         return self._value
     
     @value.setter
     def value(self, value):
         """
-        This method sets the numerical value.
+        Setter for value.
         """
         if not isinstance(value, NumericalValue):
             raise ValueError("The value must be a NumericalValue.")
@@ -88,11 +108,19 @@ class NumericalContent(Content):
 
 class Formula(Content):
     """
-    This class represents a formula.
+    This is a concrete implementation of the Content class.
+    It represents a formula.
     """
     def __init__(self, value: NumericalValue):
         """
         This method initializes the formula.
+
+        Keyword arguments:
+        value -- the value of the formula (NumericalValue)
+
+        Attributes:
+        textual_representation -- the textual representation of the formula (str)
+        expression -- the expression of the formula (list)
         """
         super().__init__(value)
         self._textual_representation = None
@@ -101,14 +129,14 @@ class Formula(Content):
     @property
     def value(self):
         """
-        This method returns the numerical value.
+        Getter for value.
         """
         return self._value
     
     @value.setter
     def value(self, value):
         """
-        This method sets the numerical value.
+        Setter for value.
         """
         if not isinstance(value, NumericalValue):
             raise ValueError("The value must be a NumericalValue.")
@@ -117,14 +145,14 @@ class Formula(Content):
     @property
     def textual_representation(self):
         """
-        This method returns the textual representation.
+        Getter for textual representation.
         """
         return self._textual_representation
     
     @textual_representation.setter
     def textual_representation(self, textual_representation):
         """
-        This method sets the textual representation.
+        Setter for textual representation.
         """
         if not isinstance(textual_representation, str):
             raise ValueError("The textual representation must be a string.")
@@ -133,14 +161,14 @@ class Formula(Content):
     @property
     def expression(self):
         """
-        This method returns the expression.
+        Getter for expression.
         """
         return self._expression
     
     @expression.setter
     def expression(self, expression):
         """
-        This method sets the expression.
+        Setter for expression.
         """
         if not isinstance(expression, list): #TODO: a list of formula components
             raise ValueError("The expression must be a list.")

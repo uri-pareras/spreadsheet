@@ -9,10 +9,16 @@ from cell import CellIdentifier
 import abc
 
 class Function(abc.ABC):
+    """
+    This is an abstract class that represents a function.
+    """
     @abc.abstractmethod
     def __init__(self, arguments: list):
         """
         This method initializes the function.
+
+        Keyword arguments:
+        arguments -- the arguments of the function (list)
         """
         self._arguments = arguments
         self._argument_values = self.obtain_values_from_arguments(arguments)
@@ -21,6 +27,10 @@ class Function(abc.ABC):
     def obtain_values_from_arguments(arguments):
         """
         This method obtains the values from the arguments.
+
+        Keyword arguments:
+        arguments -- the arguments of the function (list)
+        return -- the values of the arguments (list)
         """
         values = []
         for argument in arguments:
@@ -32,25 +42,39 @@ class Function(abc.ABC):
         """
         This method computes the function.
         """
-        pass
+        pass  #TODO: Implement this method
 
-    def get_value_as_operand(self):
+    def get_value_as_operand(self):  # TODO: As operand??
         """
         This method returns the value of the function.
+
+        Keyword arguments:
+        return -- the value of the function (Value)??
         """
         return self._value
 
-class Max(Function, Argument):
+class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argument??
+    """
+    This class is a concrete implementation of the Function class.
+    It also inherits from the Argument interface to obtain the 
+    get_values_as_argument method.
+    It represents the Max function.
+    """
     def __init__(self, arguments: list):
         """
         This method initializes the function.
+
+        Keyword arguments:
+        arguments -- the arguments of the function (list)
         """
         super().__init__(arguments)
     
     def compute(self):
         """
         This method computes the function Max.
-        This returns the maximum value of the arguments.
+
+        Keyword arguments:
+        return -- the maximum value of the arguments (float)
         """
         max = 0
         for argument in self._argument_values:
@@ -59,16 +83,27 @@ class Max(Function, Argument):
         return max
     
 class Min(Function, Argument):
+    """
+    This class is a concrete implementation of the Function class.
+    It also inherits from the Argument interface to obtain the 
+    get_values_as_argument method.
+    It represents the Min function.
+    """
     def __init__(self, arguments: list):
         """
         This method initializes the function.
+
+        Keyword arguments:
+        arguments -- the arguments of the function (list)
         """
         super().__init__(arguments)
     
     def compute(self):
         """
         This method computes the function Min.
-        This returns the minimum value of the arguments.
+
+        Keyword arguments:
+        return -- the minimum value of the arguments (float)
         """
         min = 0
         for argument in self._argument_values:
@@ -77,16 +112,27 @@ class Min(Function, Argument):
         return min
     
 class Suma(Function, Argument):
+    """
+    This class is a concrete implementation of the Function class.
+    It also inherits from the Argument interface to obtain the 
+    get_values_as_argument method.
+    It represents the Suma function.
+    """
     def __init__(self, arguments: list):
         """
         This method initializes the function.
+
+        Keyword arguments:
+        arguments -- the arguments of the function (list)
         """
         super().__init__(arguments)
 
     def compute(self):
         """
         This method computes the function Suma.
-        This returns the sum of the arguments.
+
+        Keyword arguments:
+        return -- the sum of the arguments (float)
         """
         suma = 0
         for argument in self._argument_values:
@@ -94,6 +140,12 @@ class Suma(Function, Argument):
         return suma
     
 class Promedio(Function, Argument):
+    """
+    This class is a concrete implementation of the Function class.
+    It also inherits from the Argument interface to obtain the 
+    get_values_as_argument method.
+    It represents the Promedio function.
+    """
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -103,7 +155,9 @@ class Promedio(Function, Argument):
     def compute(self):
         """
         This method computes the function Promedio.
-        This returns the average of the arguments.
+        
+        Keyword arguments:
+        return -- the average of the arguments (float)
         """
         suma = 0
         for argument in self._argument_values:

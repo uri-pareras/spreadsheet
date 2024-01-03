@@ -5,7 +5,7 @@ import abc
 
 class FormulaComponent(abc.ABC):
     """
-    This class represents a formula component.
+    This is an abstract class that represents a formula component.
     """
     @abc.abstractmethod
     def __init__(self):

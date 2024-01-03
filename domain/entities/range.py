@@ -7,9 +7,19 @@ from cell import CellIdentifier, Cell
 from spreadsheet import Spreadsheet
 
 class Range(Argument):
+    """
+    This class represents a range.
+    It inherits from the Argument interface to obtain the
+    get_values_as_argument method.
+    """
     def __init__(self, start: CellIdentifier, end: CellIdentifier, spreadsheet: Spreadsheet):
         """
         This method initializes the range.
+
+        Keyword arguments:
+        start -- the start of the range (CellIdentifier)
+        end -- the end of the range (CellIdentifier)
+        spreadsheet -- the spreadsheet (Spreadsheet)
         """
         if not isinstance(start, CellIdentifier):
             raise ValueError("The start must be a CellIdentifier.")
@@ -23,6 +33,10 @@ class Range(Argument):
     def obtain_cells(self, spreadsheet: Spreadsheet):
         """
         This method obtains the cells of the range from the spreadsheet.
+
+        Keyword arguments:
+        spreadsheet -- the spreadsheet (Spreadsheet)
+        return -- the cells of the range (list)
         """
         cells = []
         columns = self.__generate_column_range(self._start, self._end)
@@ -35,6 +49,11 @@ class Range(Argument):
     def __generate_column_range(start_column, end_column):
         """
         This function returns a list of the columns in between the start and end columns.
+
+        Keyword arguments:
+        start_column -- the start column (str)
+        end_column -- the end column (str)
+        return -- the list of columns (list)
         """
         # Function to convert a string to an integer in base-26
         def base26_to_int(s):
@@ -66,6 +85,7 @@ class Range(Argument):
     def get_values_as_argument(self):
         """
         This method returns the values of the cells.
+        return -- the values of the cells (list)
         """
         values = []
         for cell in self._cells:
