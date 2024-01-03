@@ -5,7 +5,7 @@ This file contains the Content abstarct class and its implementations.
 import abc
 from value import Value, TextualValue, NumericalValue
 
-class Content(abc):
+class Content(abc.ABC):
     """
     This class represents a content.
     """
