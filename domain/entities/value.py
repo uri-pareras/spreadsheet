@@ -3,8 +3,9 @@ This file contains the value abstract class and its implementations.
 """
 
 import abc
+from argument import Argument
 
-class Value(abc):
+class Value(abc.ABC):
     """
     This class represents a value.
     """
@@ -55,7 +56,7 @@ class TextualValue(Value):
             raise ValueError("The value must be a string.")
         self._value = value
     
-class NumericalValue(Value):
+class NumericalValue(Value, Argument):
     """
     This class represents a numerical value.
     """
@@ -80,3 +81,9 @@ class NumericalValue(Value):
         if not isinstance(value, (int, float)):
             raise ValueError("The value must be a number.")
         self._value = value
+
+    def get_values_as_argument(self):
+        """
+        This method returns a list of the values of the argument.
+        """
+        return [self._value]

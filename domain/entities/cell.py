@@ -3,11 +3,13 @@ This file contains the Cell class.
 """
 
 from content import Content, TextualContent, NumericalContent
+from argument import Argument
 import re
 
 class CellIdentifier():
     """
     This class represents a cell identifier.
+
     """
     def __init__(self, coordinate: str):
         """
@@ -20,7 +22,7 @@ class CellIdentifier():
             self._coordinate = coordinate
             
             #Get the row and the column
-            position = re.search(r"\d", s1)
+            position = re.search(r"\d", coordinate)
             self._column = coordinate[:position.start()]
             self._row = coordinate[position.start():]
 
@@ -76,7 +78,7 @@ class CellIdentifier():
         """
         return self._row
 
-class Cell():
+class Cell(Argument):
     """
     This class represents a cell.
     """
@@ -150,3 +152,12 @@ class Cell():
         if not isinstance(dependency, CellIdentifier):
             raise ValueError("The dependency must be a CellIdentifier.")
         self._dependencies.remove(dependency)
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the cell.
+        """
+        if isinstance(self._content, NumericalContent):
+            return self._content.get_values()
+        else:  # This is redundant, but it is here to make it clear
+            raise ValueError("The content must be a NumericalContent.")
