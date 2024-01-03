@@ -4,6 +4,7 @@ This file contains the value abstract class and its implementations.
 
 import abc
 from argument import Argument
+from operand import Operand
 
 class Value(abc.ABC):
     """
@@ -58,7 +59,7 @@ class TextualValue(Value):
             raise ValueError("The value must be a string.")
         self._value = value
     
-class NumericalValue(Value, Argument):
+class NumericalValue(Value, Argument, Operand):
     """
     This class represents a numerical value.
     """
@@ -86,6 +87,12 @@ class NumericalValue(Value, Argument):
 
     def get_values_as_argument(self):
         """
-        This method returns a list of the values of the argument.
+        This method returns a list of the value as an argument.
         """
         return [self._value]
+    
+    def get_value_as_operand(self):
+        """
+        This method returns the value as an operand.
+        """
+        return self._value

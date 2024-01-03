@@ -16,8 +16,8 @@ class Function(abc.ABC):
         """
         self._arguments = arguments
         self._argument_values = self.obtain_values_from_arguments(arguments)
+        self._value = self.compute()  #This is the value of the function
 
-    @abc.abstractmethod
     def obtain_values_from_arguments(arguments):
         """
         This method obtains the values from the arguments.
@@ -33,6 +33,12 @@ class Function(abc.ABC):
         This method computes the function.
         """
         pass
+
+    def get_value_as_operand(self):
+        """
+        This method returns the value of the function.
+        """
+        return self._value
 
 class Max(Function, Argument):
     def __init__(self, arguments: list):

@@ -4,6 +4,7 @@ This file contains the Cell class.
 
 from content import Content, TextualContent, NumericalContent
 from argument import Argument
+from operand import Operand
 import re
 
 class CellIdentifier():
@@ -78,7 +79,7 @@ class CellIdentifier():
         """
         return self._row
 
-class Cell(Argument):
+class Cell(Argument, Operand):
     """
     This class represents a cell.
     """
@@ -160,4 +161,13 @@ class Cell(Argument):
         if isinstance(self._content, NumericalContent):
             return self._content.get_values()
         else:  # This is redundant, but it is here to make it clear
+            raise ValueError("The content must be a NumericalContent.")
+    
+    def get_value_as_operand(self):
+        """
+        This method returns the value of the cell.
+        """
+        if isinstance(self._content, NumericalContent):
+            return self._content.get_value()
+        else:
             raise ValueError("The content must be a NumericalContent.")
