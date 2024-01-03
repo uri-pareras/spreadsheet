@@ -15,7 +15,7 @@ class Function(abc.ABC):
         This method initializes the function.
         """
         self._arguments = arguments
-        self._values = self.obtain_values_from_arguments(arguments)
+        self._argument_values = self.obtain_values_from_arguments(arguments)
 
     @abc.abstractmethod
     def obtain_values_from_arguments(arguments):
@@ -47,7 +47,7 @@ class Max(Function, Argument):
         This returns the maximum value of the arguments.
         """
         max = 0
-        for argument in self._values:
+        for argument in self._argument_values:
             if argument > max:
                 max = argument
         return max
@@ -65,7 +65,7 @@ class Min(Function, Argument):
         This returns the minimum value of the arguments.
         """
         min = 0
-        for argument in self._values:
+        for argument in self._argument_values:
             if argument < min:
                 min = argument
         return min
@@ -83,7 +83,7 @@ class Suma(Function, Argument):
         This returns the sum of the arguments.
         """
         suma = 0
-        for argument in self._values:
+        for argument in self._argument_values:
             suma = suma + argument
         return suma
     
@@ -100,6 +100,6 @@ class Promedio(Function, Argument):
         This returns the average of the arguments.
         """
         suma = 0
-        for argument in self._values:
+        for argument in self._argument_values:
             suma = suma + argument
-        return suma/len(self._values)
+        return suma/len(self._argument_values)
