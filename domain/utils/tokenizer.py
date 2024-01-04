@@ -62,17 +62,6 @@ class Tokenizer:
     function name, and range.
     """
 
-    def __init__(self):
-        """
-        This method initializes the tokenizer.
-
-        Attributes:
-        tokens -- the list of tokens (list)
-        current_token_index -- the current token index (int)
-        """
-        self._tokens = []
-        self._current_token_index = 0
-
     @staticmethod
     def tokenize(formula_string: str):
         """

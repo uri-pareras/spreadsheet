@@ -25,6 +25,14 @@ class Parser:
         self.current_token = None
         self.token_index = -1
 
+    def clean(self):
+        """
+        This method cleans the parser.
+        """
+        self._tokens = []
+        self.current_token = None
+        self.token_index = -1
+
     @property
     def tokens(self):
         """
@@ -67,6 +75,7 @@ class Parser:
         Returns:
         tokens -- the list of tokens (list)
         """
+        self.clean()
         self.tokens = token_list  # Set the token list
         self.expression()
         return self.tokens
