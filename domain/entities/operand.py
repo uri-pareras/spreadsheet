@@ -2,10 +2,10 @@
 This file contains the operand interface.   
 """
 from formula_component import FormulaComponent
-from value import Value
 import abc
 
-class Operand(FormulaComponent):  #TODO: Perque hereta de FormulaComponent?
+
+class Operand(FormulaComponent):  # TODO: Perque hereta de FormulaComponent?
     """
     This class is an interface for the arguments.
     The method must be implemented in the subclasses.
@@ -17,4 +17,3 @@ class Operand(FormulaComponent):  #TODO: Perque hereta de FormulaComponent?
         This method returns the values of the argument as an operand.
         """
         pass
-    

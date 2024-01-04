@@ -7,10 +7,12 @@ from argument import Argument
 from operand import Operand
 import re
 
-class CellIdentifier():
+
+class CellIdentifier:
     """
     This class represents a cell identifier.
     """
+
     def __init__(self, coordinate: str):
         """
         This method initializes the cell identifier.
@@ -23,17 +25,18 @@ class CellIdentifier():
         _column -- the column of the cell (str)
         _row -- the row of the cell (str)
         """
-        #Check if the coordinate is valid
+        # Check if the coordinate is valid
         if not isinstance(coordinate, str):
             raise ValueError("The coordinate must be a string.")
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
-            
-            #Get the row and the column
+
+            # Get the row and the column
             position = re.search(r"\d", coordinate)
             self._column = coordinate[:position.start()]
             self._row = coordinate[position.start():]
 
+    @staticmethod
     def coordinate_is_valid(coordinate: str):
         """
         This method checks if the coordinate is valid.
@@ -43,6 +46,7 @@ class CellIdentifier():
         coordinate -- the coordinate of the cell (str)
         return -- True if the coordinate is valid and False otherwise (bool)
         """
+        first_number_index = 0
         for i, c in enumerate(coordinate):
             if c.isdigit():
                 first_number_index = i
@@ -58,14 +62,14 @@ class CellIdentifier():
         if not row.isdigit():
             raise ValueError("The row must be a string of numbers.")
         return True
-    
+
     @property
     def coordinate(self):
         """
         Getter for the coordinate.
         """
         return self._coordinate
-    
+
     @coordinate.setter
     def coordinate(self, coordinate):
         """
@@ -82,7 +86,7 @@ class CellIdentifier():
         Getter for the column.
         """
         return self._column
-    
+
     @property
     def row(self):
         """
@@ -90,10 +94,12 @@ class CellIdentifier():
         """
         return self._row
 
+
 class Cell(Argument, Operand):
     """
     This class represents a cell.
     """
+
     def __init__(self, identifier: CellIdentifier, content: Content):
         """
         This method initializes the cell.
@@ -110,14 +116,14 @@ class Cell(Argument, Operand):
         self._identifier = identifier
         self._content = content
         self._depends_on_me = []
-    
+
     @property
     def identifier(self):
         """
         Getter for the identifier.
         """
         return self._identifier
-    
+
     @identifier.setter
     def identifier(self, identifier):
         """
@@ -126,14 +132,14 @@ class Cell(Argument, Operand):
         if not isinstance(identifier, CellIdentifier):
             raise ValueError("The identifier must be a CellIdentifier.")
         self._identifier = identifier
-    
+
     @property
     def content(self):
         """
         Getter for content.
         """
         return self._content
-    
+
     @content.setter
     def content(self, content):
         """
@@ -144,20 +150,20 @@ class Cell(Argument, Operand):
         self._content = content
 
     @property
-    def dependencies(self):
+    def depends_on_me(self):
         """
         Getter for dependencies.
         """
-        return self._dependencies
-    
-    @dependencies.setter
-    def dependencies(self, dependencies):
+        return self._depends_on_me
+
+    @depends_on_me.setter
+    def depends_on_me(self, dependencies):
         """
         Setter for dependencies.
         """
         if not isinstance(dependencies, list):
             raise ValueError("The dependencies must be a list.")
-        self._dependencies = dependencies
+        self._depends_on_me = dependencies
 
     def add_dependency(self, dependency: CellIdentifier):
         """
@@ -166,10 +172,10 @@ class Cell(Argument, Operand):
         keyword arguments:
         dependency -- the dependency to add (CellIdentifier)
         """
-        if not isinstance(dependency, CellIdentifier): #TODO: CellIdentifier or Cell?
+        if not isinstance(dependency, CellIdentifier):  # TODO: CellIdentifier or Cell?
             raise ValueError("The dependency must be a CellIdentifier.")
-        self._dependencies.append(dependency)
-    
+        self._depends_on_me.append(dependency)
+
     def remove_dependency(self, dependency: CellIdentifier):
         """
         This method removes a dependency from the attribute _dependencies.
@@ -179,20 +185,20 @@ class Cell(Argument, Operand):
         """
         if not isinstance(dependency, CellIdentifier):
             raise ValueError("The dependency must be a CellIdentifier.")
-        self._dependencies.remove(dependency)
+        self._depends_on_me.remove(dependency)
 
     def get_values_as_argument(self):
         """
-        This method returns the values of the cell as an argument.
+        This method returns the value of the cell as an argument.
 
         Keyword arguments:
         return -- the values of the cell (list)
         """
         if isinstance(self._content, NumericalContent):
-            return self._content.get_values()
+            return self._content.value()
         else:  # This is redundant, but it is here to make it clear
             raise ValueError("The content must be a NumericalContent.")
-    
+
     def get_value_as_operand(self):
         """
         This method returns the value of the cell as an operand.
@@ -201,6 +207,6 @@ class Cell(Argument, Operand):
         return -- the value of the cell (float)
         """
         if isinstance(self._content, NumericalContent):
-            return self._content.get_value()
+            return self._content.value()
         else:
             raise ValueError("The content must be a NumericalContent.")

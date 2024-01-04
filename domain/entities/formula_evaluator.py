@@ -1,10 +1,8 @@
 """
 This file contains the formula evaluator class and its subclasses. 
 """
-from formula_component import FormulaComponent
-from formula_operator import Operator
-from operand import Operand
 import abc
+
 
 class FormulaEvaluator(abc.ABC):
     """

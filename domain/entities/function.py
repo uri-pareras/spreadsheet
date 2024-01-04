@@ -1,17 +1,15 @@
 """
 This file contains the function class.
 """
-
-from content import Content, TextualContent, NumericalContent
 from argument import Argument
-from value import Value, TextualValue, NumericalValue
-from cell import CellIdentifier
 import abc
+
 
 class Function(abc.ABC):
     """
     This is an abstract class that represents a function.
     """
+
     @abc.abstractmethod
     def __init__(self, arguments: list):
         """
@@ -21,10 +19,10 @@ class Function(abc.ABC):
         arguments -- the arguments of the function (list)
         """
         self._arguments = arguments
-        self._argument_values = self.obtain_values_from_arguments(arguments)
-        self._value = self.compute()  #This is the value of the function
+        self._argument_values = self.obtain_values_from_arguments()
+        self._value = self.compute()  # This is the value of the function
 
-    def obtain_values_from_arguments(arguments):
+    def obtain_values_from_arguments(self):
         """
         This method obtains the values from the arguments.
 
@@ -33,16 +31,16 @@ class Function(abc.ABC):
         return -- the values of the arguments (list)
         """
         values = []
-        for argument in arguments:
-            values = values + argument.get_values_as_argument()  #List concatenation
+        for argument in self._arguments:
+            values = values + argument.get_values_as_argument()  # List concatenation
         return values
-    
+
     @abc.abstractmethod
     def compute(self):
         """
         This method computes the function.
         """
-        pass  #TODO: Implement this method
+        pass  # TODO: Implement this method
 
     def get_value_as_operand(self):  # TODO: As operand??
         """
@@ -53,13 +51,15 @@ class Function(abc.ABC):
         """
         return self._value
 
-class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argument??
+
+class Max(Function, Argument):  # TODO: REVISAR Argument and get_values_as_argument??
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
     get_values_as_argument method.
     It represents the Max function.
     """
+
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -68,7 +68,7 @@ class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argume
         arguments -- the arguments of the function (list)
         """
         super().__init__(arguments)
-    
+
     def compute(self):
         """
         This method computes the function Max.
@@ -76,12 +76,22 @@ class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argume
         Keyword arguments:
         return -- the maximum value of the arguments (float)
         """
-        max = 0
+        result = 0
         for argument in self._argument_values:
-            if argument > max:
-                max = argument
-        return max
-    
+            if argument > result:
+                result = argument
+        return result
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the argument.
+
+        Keyword arguments:
+        return -- the values of the argument (list)
+        """
+        return self._argument_values
+
+
 class Min(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -89,6 +99,7 @@ class Min(Function, Argument):
     get_values_as_argument method.
     It represents the Min function.
     """
+
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -97,7 +108,7 @@ class Min(Function, Argument):
         arguments -- the arguments of the function (list)
         """
         super().__init__(arguments)
-    
+
     def compute(self):
         """
         This method computes the function Min.
@@ -105,12 +116,22 @@ class Min(Function, Argument):
         Keyword arguments:
         return -- the minimum value of the arguments (float)
         """
-        min = 0
+        result = 0
         for argument in self._argument_values:
-            if argument < min:
-                min = argument
-        return min
-    
+            if argument < result:
+                result = argument
+        return result
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the argument.
+
+        Keyword arguments:
+        return -- the values of the argument (list)
+        """
+        return self._argument_values
+
+
 class Suma(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -118,6 +139,7 @@ class Suma(Function, Argument):
     get_values_as_argument method.
     It represents the Suma function.
     """
+
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -138,7 +160,17 @@ class Suma(Function, Argument):
         for argument in self._argument_values:
             suma = suma + argument
         return suma
-    
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the argument.
+
+        Keyword arguments:
+        return -- the values of the argument (list)
+        """
+        return self._argument_values
+
+
 class Promedio(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -146,6 +178,7 @@ class Promedio(Function, Argument):
     get_values_as_argument method.
     It represents the Promedio function.
     """
+
     def __init__(self, arguments: list):
         """
         This method initializes the function.
@@ -162,4 +195,13 @@ class Promedio(Function, Argument):
         suma = 0
         for argument in self._argument_values:
             suma = suma + argument
-        return suma/len(self._argument_values)
+        return suma / len(self._argument_values)
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the argument.
+
+        Keyword arguments:
+        return -- the values of the argument (list)
+        """
+        return self._argument_values

@@ -3,20 +3,21 @@ This file contains the operator class.
 """
 from formula_component import FormulaComponent
 
+
 class Operator(FormulaComponent):
     """
     This is a concrete implementation of the FormulaComponent class.
     This class represents an operator.
     """
 
-    def __init__(self, type: str):
+    def __init__(self, operator_type: str):
         """
         This method initializes the operator.
 
         Keyword arguments:
         type -- the type of the operator (str)
         """
-        self._type = type
+        self._type = operator_type
         
     def compute(self, left_operand, right_operand):
         """
