@@ -38,3 +38,19 @@ class Operator(FormulaComponent):
                 return left_operand / right_operand
             case _:
                 raise ValueError("The operator is not valid.")
+            
+    def precedence(self):
+        """
+        This method returns the precedence of the operator.
+        """
+        match self._type:
+            case "+":
+                return 1
+            case "-":
+                return 1
+            case "*":
+                return 2
+            case "/":
+                return 2
+            case _:
+                raise ValueError("The operator is not valid.")
