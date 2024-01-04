@@ -185,20 +185,40 @@ class Parser():
         
         elif self.current_token and self.current_token.type == TokenType.FUNCTION:  #Function synthax comprobation.
             self.advance()
-            if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
+            if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS: #Opening parenthesis comprobation.
                 self.advance()
-                if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER or self.current_token.type == TokenType.NUMBER:
+                if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER: # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
                     self.advance()
                     if self.current_token and self.current_token.type == TokenType.COLON:
                         self.advance()
-                        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER or self.current_token.type == TokenType.NUMBER:
+                        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
                             self.advance()
                         else:
                             raise SyntaxError("Expected cell identifier")
                     else:
                         raise SyntaxError("Expected colon")
+                elif self.current_token and self.current_token.type == TokenType.NUMBER: # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation. 
+                    self.advance()
+                    if self.current_token and self.current_token.type == TokenType.SEMICOLON:
+                        self.advance()
+                        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+                            self.advance()
+                            if self.current_token and self.current_token.type == TokenType.COLON:
+                                self.advance()
+                                if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+                                    self.advance()
+                                else:
+                                    raise SyntaxError("Expected cell identifier")
+                            else:
+                                raise SyntaxError("Expected colon")
+                        elif self.current_token and self.current_token.type == TokenType.NUMBER:
+                            self.advance()
+                        else:
+                            raise SyntaxError("Expected cell identifier or number")
+                    else:
+                        raise SyntaxError("Expected semicolon")
                 else:
-                    raise SyntaxError("Expected cell identifier")
+                    raise SyntaxError("Expected cell identifier or number")
                 if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
                     self.advance()
                 else:
@@ -212,14 +232,14 @@ class Parser():
 
 # Example usage:
 tokenizer = Tokenizer()
-string_to_parse = "A1 + MAX(5:8) * (10 - 4)"
+string_to_parse = "A1 + MAX(9;A1:B2) * (10 - 4)"
 tokens = list(tokenizer.tokenize(string_to_parse))
 parser = Parser(tokens)
 result = parser.parse()
 for token in result:
     print(token.value)
 
-string_to_parse = "AB1 + PROMEDIO(5:8) * (D3 - 4) / C3 * P0"
+string_to_parse = "AB1 + PROMEDIO(A1:B2) * (D3 - 4) / C3 * P0"
 tokens = list(tokenizer.tokenize(string_to_parse))
 parser = Parser(tokens)
 result = parser.parse()
