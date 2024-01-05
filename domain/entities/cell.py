@@ -7,7 +7,8 @@ from argument import Argument
 from operand import Operand
 import re
 
-class CellIdentifier():
+
+class CellIdentifier:
     """
     This class represents a cell identifier.
     """
@@ -16,24 +17,25 @@ class CellIdentifier():
         This method initializes the cell identifier.
 
         Keyword arguments:
-        coordinate -- the coordinate of the cell (str)
+        coordinate -- the coordinate of the cell (str ex: A1)
 
         Attributes:
         _coordinate -- the coordinate of the cell (str)
         _column -- the column of the cell (str)
         _row -- the row of the cell (str)
         """
-        #Check if the coordinate is valid
+        # Check if the coordinate is valid
         if not isinstance(coordinate, str):
             raise ValueError("The coordinate must be a string.")
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
             
-            #Get the row and the column
+            # Get the row and the column
             position = re.search(r"\d", coordinate)
             self._column = coordinate[:position.start()]
             self._row = coordinate[position.start():]
 
+    @staticmethod
     def coordinate_is_valid(coordinate: str):
         """
         This method checks if the coordinate is valid.
@@ -43,6 +45,7 @@ class CellIdentifier():
         coordinate -- the coordinate of the cell (str)
         return -- True if the coordinate is valid and False otherwise (bool)
         """
+        first_number_index = 0
         for i, c in enumerate(coordinate):
             if c.isdigit():
                 first_number_index = i
@@ -89,6 +92,7 @@ class CellIdentifier():
         Getter for the row.
         """
         return self._row
+
 
 class Cell(Argument, Operand):
     """
@@ -148,7 +152,7 @@ class Cell(Argument, Operand):
         """
         Getter for dependencies.
         """
-        return self._dependencies
+        return self._depends_on_me
     
     @dependencies.setter
     def dependencies(self, dependencies):
@@ -157,7 +161,7 @@ class Cell(Argument, Operand):
         """
         if not isinstance(dependencies, list):
             raise ValueError("The dependencies must be a list.")
-        self._dependencies = dependencies
+        self._depends_on_me = dependencies
 
     def add_dependency(self, dependency: CellIdentifier):
         """
@@ -166,9 +170,9 @@ class Cell(Argument, Operand):
         keyword arguments:
         dependency -- the dependency to add (CellIdentifier)
         """
-        if not isinstance(dependency, CellIdentifier): #TODO: CellIdentifier or Cell?
+        if not isinstance(dependency, CellIdentifier):  # TODO: CellIdentifier or Cell?
             raise ValueError("The dependency must be a CellIdentifier.")
-        self._dependencies.append(dependency)
+        self._depends_on_me.append(dependency)
     
     def remove_dependency(self, dependency: CellIdentifier):
         """
@@ -179,7 +183,7 @@ class Cell(Argument, Operand):
         """
         if not isinstance(dependency, CellIdentifier):
             raise ValueError("The dependency must be a CellIdentifier.")
-        self._dependencies.remove(dependency)
+        self._depends_on_me.remove(dependency)
 
     def get_values_as_argument(self):
         """

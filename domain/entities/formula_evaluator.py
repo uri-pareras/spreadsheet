@@ -3,7 +3,6 @@ This file contains the formula evaluator class and its subclasses.
 """
 from formula_component import Parenthesis
 from formula_operator import Operator
-from operand import Operand
 from domain.utils.tokenizer import Tokenizer
 from domain.utils.parser import Parser
 import abc
@@ -76,8 +75,9 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
 
 if __name__ == "__main__":
     # Test generate_postfix_expression()
-    expr = [Parenthesis(opens=True),NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
-            NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"), NumericalValue(1)]
+    expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
+            NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
+            NumericalValue(1)]
     f = FormulaEvaluatorPostfix()
     postfix_expr = f.shunting_yard.generate_postfix_expression(expr)
     for item in postfix_expr:
@@ -85,6 +85,6 @@ if __name__ == "__main__":
             print(item.value)
         except AttributeError:
             try:
-                print(item._type)
+                print(type(item))
             except AttributeError:
                 print("()")

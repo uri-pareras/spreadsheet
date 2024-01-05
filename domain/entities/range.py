@@ -3,7 +3,7 @@ This file contains the Range class.
 """
 
 from argument import Argument
-from cell import CellIdentifier, Cell
+from cell import CellIdentifier
 from spreadsheet import Spreadsheet
 
 
@@ -29,7 +29,6 @@ class Range(Argument):
         self._start = start
         self._end = end
         self._cells = self.obtain_cells(spreadsheet)
-        
 
     def obtain_cells(self, spreadsheet: Spreadsheet):
         """
@@ -40,13 +39,13 @@ class Range(Argument):
         return -- the cells of the range (list)
         """
         cells = []
-        columns = self.__generate_column_range(self._start, self._end)
+        columns = self.__generate_column_range(self._start.column, self._end.column)
         for column in columns:
             for row in range(self._start.row, self._end.row + 1):
-                cells.append(spreadsheet.get_cell(CellIdentifier(column, row)))
-        return cells #TODO: revisar
-    
+                cells.append(spreadsheet.get_cell(CellIdentifier(str(column) + str(row))))
+        return cells  # TODO: revisar
 
+    @staticmethod
     def __generate_column_range(start_column, end_column):
         """
         This function returns a list of the columns in between the start and end columns.
@@ -58,19 +57,19 @@ class Range(Argument):
         """
         # Function to convert a string to an integer in base-26
         def base26_to_int(s):
-            result = 0
+            result_int = 0
             for c in s:
-                result = result * 26 + ord(c) - ord('A') + 1
-            return result - 1  # Subtract 1 for 0-indexing
+                result_int = result_int * 26 + ord(c) - ord('A') + 1
+            return result_int - 1  # Subtract 1 for 0-indexing
 
         # Function to convert an integer to a string in base-26
         def int_to_base26(num):
-            result = ''
+            result_b26 = ''
             while num >= 0:
-                result = chr(num % 26 + ord('A')) + result
+                result_b26 = chr(num % 26 + ord('A')) + result_b26
                 num //= 26
                 num -= 1  # Subtract 1 for 0-indexing
-            return result
+            return result_b26
 
         # Convert the start and end strings to integers
         start_num = base26_to_int(start_column)

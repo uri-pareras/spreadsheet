@@ -1,11 +1,7 @@
 """
 This file contains the function class.
 """
-
-from content import Content, TextualContent, NumericalContent
 from argument import Argument
-from value import Value, TextualValue, NumericalValue
-from cell import CellIdentifier
 import abc
 
 
@@ -41,7 +37,7 @@ class Function(abc.ABC):
         """
         This method computes the function.
         """
-        pass  #TODO: Implement this method
+        pass
 
     def get_value_as_operand(self):  # TODO: As operand??
         """
@@ -50,7 +46,7 @@ class Function(abc.ABC):
         Keyword arguments:
         return -- the value of the function (Value)??
         """
-        return self._value
+        return self.compute()
 
     def get_values_as_argument(self):
         """
@@ -62,7 +58,7 @@ class Function(abc.ABC):
         return [self.compute()]
 
 
-class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argument??
+class Max(Function, Argument):  # TODO: REVISAR Argument and get_values_as_argument??
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
