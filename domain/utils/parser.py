@@ -110,16 +110,13 @@ class Parser:
         elif self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
             self.advance()
             self.expression()
-            if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
-                self.advance()
-            else:
-                raise SyntaxError("Expected closing parenthesis")
+            self.check_closing_parenthesis()
         elif self.current_token and self.current_token.type == TokenType.FUNCTION:  # Function synthax comprobation.
             self.check_function()
         elif self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
         else:
-            raise SyntaxError("Invalid factor")
+            raise SyntaxError("Invalid factor, expected number, opening parenthesis, function or cell identifier")
 
     def check_function(self):
         """
@@ -127,35 +124,26 @@ class Parser:
         """
         self.advance()
         # Opening parenthesis comprobation.
-        if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
+        self.check_opening_parenthesis()
+        # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
+        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
-            # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
-            if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                self.advance()
-                self.check_colon()
-                self.check_cell_id()
-            # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation.
-            elif self.current_token and self.current_token.type == TokenType.NUMBER:
-                self.advance()
-                self.check_semicolon()
-                self.check_cell_id_or_number()
-            elif self.current_token and self.current_token.type == TokenType.FUNCTION:
-                self.check_function()  # Recursive call to accept nested functions.
-                self.check_semicolon()
-                self.check_cell_id_or_number()
-            else:
-                raise SyntaxError("Expected cell identifier or number")
-            if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
-                self.advance()
-            else:
-                raise SyntaxError("Expected closing parenthesis")
+            self.check_colon()
+            self.check_cell_id()
+        # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation.
+        elif self.current_token and self.current_token.type == TokenType.NUMBER:
+            self.advance()
+            self.check_semicolon()
+            self.check_cell_id_or_number()
+        elif self.current_token and self.current_token.type == TokenType.FUNCTION:
+            self.check_function()  # Recursive call to accept nested functions.
+            self.check_semicolon()
+            self.check_cell_id_or_number()
         else:
-            raise SyntaxError("Expected opening parenthesis")
+            raise SyntaxError("Expected cell identifier, number or function")
+        self.check_closing_parenthesis()
 
     def check_cell_id_or_number(self):
-        """
-        This method is done only to avoid code duplication.
-        """
         if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
             self.check_colon()
@@ -182,6 +170,18 @@ class Parser:
             self.advance()
         else:
             raise SyntaxError("Expected cell identifier")
+
+    def check_closing_parenthesis(self):
+        if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
+            self.advance()
+        else:
+            raise SyntaxError("Expected closing parenthesis")
+
+    def check_opening_parenthesis(self):
+        if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
+            self.advance()
+        else:
+            raise SyntaxError("Expected opening parenthesis")
 
 
 # ======================================================================================================================
