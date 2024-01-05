@@ -1,35 +1,39 @@
 """
 This file contains the formula evaluator class and its subclasses. 
 """
-from spreadsheet import Spreadsheet
-from cell import CellIdentifier
-from content import Formula
+from formula_component import FormulaComponent, Parenthesis
+from formula_operator import Operator
+from operand import Operand
+from domain.utils.tokenizer import Tokenizer, Token, TokenType
+from domain.utils.parser import Parser
+import abc
 from value import NumericalValue
-from domain.utils.parser import Tokenizer, Parser, TokenType, Token
-from domain.utils.shunting_yard_algorithm import ShuntingYard
 
 
-class FormulaEvaluator:
+class FormulaEvaluator(abc.ABC):
     """
-    This class represents the formula evaluator.
-    It is the class that handles the tokenizer, parser and shunting yard algorithm.
-    This class also translates the cell identifiers to the numerical values.
+    This is an abstract class represents a formula evaluator.
     """
-    def __init__(self, spreadsheet: Spreadsheet):
+    def __init__(self) -> None:
+        self.tokenizer = Tokenizer()
+        self.parser = Parser()
+        # self.dependency_manager = DependencyManager()
+
+    def generate_expression(self, formula: str) -> list:
         """
-        This method initializes the formula evaluator.
+        This method generates the expression from the formula.
 
         Keyword arguments:
-        spreadsheet -- the spreadsheet (Spreadsheet)
+        formula -- the formula to be evaluated (str)
+        return -- the list of tokens (list)
         """
-        if not isinstance(spreadsheet, Spreadsheet):
-            raise TypeError("Invalid spreadsheet")
-        self._spreadsheet = spreadsheet
-        self._tokenizer = Tokenizer()
-        self._parser = Parser()
-        self._shunting_yard = ShuntingYard()
+        tokens = self.tokenizer.tokenize(formula)
+        tokens = self.parser.parse(tokens)
+        #TODO: Manage dependencies
+        return tokens
 
-    def evaluate(self, formula: str) -> float:
+    @abc.abstractmethod
+    def evaluate_expression(self, formula: list) -> float:
         """
         This method evaluates the formula.
 
@@ -37,45 +41,96 @@ class FormulaEvaluator:
         formula -- the formula to be evaluated (str)
         return -- the result of the evaluation (float)
         """
-        token_list = self._tokenizer.tokenize(formula)  # First step, tokenize the formula
-        parsed_token_list = self._parser.parse(token_list)  # Second step, parse the token list
-        token_list_no_cell_id = self.translate_cell_identifiers(parsed_token_list)  # Translate cell identifiers
-        result = self._shunting_yard.evaluate_shunting_yard(token_list_no_cell_id)  # Third step, evaluate shunting yard
-        return result
+        pass
 
-    def cell_identifier_to_value(self, cell_identifier: CellIdentifier):
+
+class FormulaEvaluatorPostfix(FormulaEvaluator):
+    """
+    This class represents a postfix formula evaluator.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def evaluate_expression(self, formula: list) -> float:
         """
-        This method translates the cell identifier to the numerical value.
+        This method evaluates the formula.
 
         Keyword arguments:
-        cell_identifier -- the cell identifier (CellIdentifier)
-        return -- the numerical value (float)
+        formula -- the formula to be evaluated (str)
+        return -- the result of the evaluation (float)
         """
-        if not isinstance(cell_identifier, CellIdentifier):
-            raise TypeError("Invalid cell identifier")
-        cell = self._spreadsheet.get_cell(cell_identifier)
-        if not isinstance(cell.content.value, NumericalValue):
-            raise TypeError("Invalid cell content: Not a numerical value")
-        return cell.content.value.value  # Return the numerical value
+        expression = self.convert_to_formula_components(formula)
+        expression = self.generate_postfix_expression(expression)
+        return self.evaluate_postfix_expression(expression)
+        pass
 
-    def translate_cell_identifiers(self, token_list: list) -> list:
+    def convert_to_formula_components(self, tokens: list) -> list:
+        '''
+        This method converts the list of tokens to a list of FormulaComponent objects.
+        '''
+        pass  # Todo: Aquesta funció ha de convertir els tokens a FormulaComponent objects
+
+
+    def generate_postfix_expression(self, expression: list) -> list:
         """
-        This method changes the cell identifiers in the token list to the numerical values.
-        It returns the same token list but instead of the cell identifiers it has the numerical values.
+        This method generates the postfix expression from the list of FormulaComponent
+        objects passed as argument. It uses the Shunting-yard algorithm, and outputs
+        a list of FormulaComponent objects. This list alternates between Operand
+        and Operator objects.
 
         Keyword arguments:
-        token_list -- the token list (list)
-        return -- the cell identifier list (list)
+        expression -- the list of FormulaComponent objects (list of FormulaComponent objects
+        return -- the postfix expression (list of FormulaComponent objects)
         """
-        if not isinstance(token_list, list):
-            raise TypeError("Invalid token list")
-        return_list = []
-        for token in token_list:
-            if token.type == TokenType.CELL_IDENTIFIER:
-                value = self.cell_identifier_to_value(token.value)
-                new_token = Token(TokenType.NUMBER, value)
-                return_list.append(new_token)
-            else:
-                return_list.append(token)
-        return return_list
+        output = []
+        stack = []
+        for component in expression:
+            if isinstance(component,Operand):
+                output.append(component)
+            elif isinstance(component, Operator):
+                while stack and isinstance(stack[-1],Operator):
+                    if component.precedence() <= stack[-1].precedence():
+                        output.append(stack.pop())
+                    else:
+                        break
+                stack.append(component)
+            elif isinstance(component, Parenthesis) and component.opens():
+                stack.append(component)
+            elif isinstance(component, Parenthesis) and not component.opens():
+                while stack and isinstance(stack[-1],Parenthesis) and stack[-1].opens():
+                    output.append(stack.pop())
+                stack.pop()
 
+        return output + stack[::-1]
+
+
+    def evaluate_postfix_expression(self, expression: list) -> float:
+        """
+        This method evaluates the postfix expression passed as argument.
+        """
+        stack = []
+        for component in expression:
+            if isinstance(component,Operand):
+                stack.append(component)
+            elif isinstance(component,Operator):
+                operand2 = stack.pop().get_value_as_operand()
+                operand1 = stack.pop().get_value_as_operand()
+                stack.append(component.compute(operand1,operand2))
+        return stack.pop().value
+
+
+if __name__ == "__main__":
+    # Test generate_postfix_expression()
+    expr = [Parenthesis(opens=True),NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
+            NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"), NumericalValue(1)]
+    f = FormulaEvaluatorPostfix()
+    postfix_expr = f.generate_postfix_expression(expr)
+    for item in postfix_expr:
+        try:
+            print(item.value)
+        except AttributeError:
+            try:
+                print(item._type)
+            except AttributeError:
+                print("()")

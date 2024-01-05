@@ -16,4 +16,4 @@ class Argument(abc.ABC):
         """
         This method returns the values of the argument.
         """
-        pass  # TODO
+        pass

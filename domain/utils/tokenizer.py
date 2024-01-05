@@ -78,7 +78,7 @@ class Tokenizer:
             elif cell_id:
                 yield Token(TokenType.CELL_IDENTIFIER, cell_id)
             elif number:
-                yield Token(TokenType.NUMBER, float(number))
+                yield Token(TokenType.NUMBER, number)
             elif open_paren:
                 yield Token(TokenType.OPENING_PARENTHESIS, open_paren)
             elif close_paren:
