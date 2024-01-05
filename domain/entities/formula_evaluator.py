@@ -3,7 +3,8 @@ This file contains the formula evaluator class and its subclasses.
 """
 from formula_component import FormulaComponent, Parenthesis
 from formula_operator import Operator
-from spreadsheet.domain.utils.formula_evaluator_utils import Tokenizer, Parser, DependencyManager, Token, TokenType
+from domain.utils.tokenizer import Tokenizer, Token, TokenType
+from domain.utils.parser import Parser
 from operand import Operand
 import abc
 
@@ -11,11 +12,10 @@ class FormulaEvaluator(abc.ABC):
     """
     This is an abstract class represents a formula evaluator.
     """
-
     def __init__(self) -> None:
         self.tokenizer = Tokenizer()
         self.parser = Parser()
-        self.dependency_manager = DependencyManager()
+        # self.dependency_manager = DependencyManager()
 
     def generate_expression(self, formula: str) -> list:
         """
