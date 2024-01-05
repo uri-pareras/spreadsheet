@@ -189,7 +189,7 @@ class Cell(Argument, Operand):
         return -- the values of the cell (list)
         """
         if isinstance(self._content, NumericalContent):
-            return self._content.get_values()
+            return [self._content.value]
         else:  # This is redundant, but it is here to make it clear
             raise ValueError("The content must be a NumericalContent.")
     
@@ -201,6 +201,6 @@ class Cell(Argument, Operand):
         return -- the value of the cell (float)
         """
         if isinstance(self._content, NumericalContent):
-            return self._content.get_value()
+            return self._content.value
         else:
             raise ValueError("The content must be a NumericalContent.")

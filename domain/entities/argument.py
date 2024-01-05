@@ -4,6 +4,7 @@ This file contains the argument class.
 
 import abc
 
+
 class Argument(abc.ABC):
     """
     This class is an interface for the arguments.
@@ -14,5 +15,5 @@ class Argument(abc.ABC):
         """
         This method returns the values of the argument.
         """
-        pass  #TODO
+        pass
     

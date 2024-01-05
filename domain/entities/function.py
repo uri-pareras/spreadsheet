@@ -8,6 +8,7 @@ from value import Value, TextualValue, NumericalValue
 from cell import CellIdentifier
 import abc
 
+
 class Function(abc.ABC):
     """
     This is an abstract class that represents a function.
@@ -21,10 +22,8 @@ class Function(abc.ABC):
         arguments -- the arguments of the function (list)
         """
         self._arguments = arguments
-        self._argument_values = self.obtain_values_from_arguments(arguments)
-        self._value = self.compute()  #This is the value of the function
 
-    def obtain_values_from_arguments(arguments):
+    def obtain_values_from_arguments(self):
         """
         This method obtains the values from the arguments.
 
@@ -33,8 +32,8 @@ class Function(abc.ABC):
         return -- the values of the arguments (list)
         """
         values = []
-        for argument in arguments:
-            values = values + argument.get_values_as_argument()  #List concatenation
+        for argument in self._arguments:
+            values = values + argument.get_values_as_argument()  # List concatenation
         return values
     
     @abc.abstractmethod
@@ -52,6 +51,16 @@ class Function(abc.ABC):
         return -- the value of the function (Value)??
         """
         return self._value
+
+    def get_values_as_argument(self):
+        """
+        This method returns the values of the function.
+
+        Keyword arguments:
+        return -- the values of the function (list)
+        """
+        return [self.compute()]
+
 
 class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argument??
     """
@@ -76,12 +85,15 @@ class Max(Function, Argument):  #TODO: REVISAR Argument and get_values_as_argume
         Keyword arguments:
         return -- the maximum value of the arguments (float)
         """
-        max = 0
-        for argument in self._argument_values:
-            if argument > max:
-                max = argument
-        return max
-    
+
+        values = self.obtain_values_from_arguments()
+        max_value = values[0]
+        for argument in values:
+            if argument > max_value:
+                max_value = argument
+        return max_value
+
+
 class Min(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -105,12 +117,14 @@ class Min(Function, Argument):
         Keyword arguments:
         return -- the minimum value of the arguments (float)
         """
-        min = 0
-        for argument in self._argument_values:
-            if argument < min:
-                min = argument
-        return min
-    
+        values = self.obtain_values_from_arguments()
+        min_value = values[0]
+        for argument in values:
+            if argument < min_value:
+                min_value = argument
+        return min_value
+
+
 class Suma(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -135,10 +149,12 @@ class Suma(Function, Argument):
         return -- the sum of the arguments (float)
         """
         suma = 0
-        for argument in self._argument_values:
+        values = self.obtain_values_from_arguments()
+        for argument in values:
             suma = suma + argument
         return suma
-    
+
+
 class Promedio(Function, Argument):
     """
     This class is a concrete implementation of the Function class.
@@ -160,6 +176,7 @@ class Promedio(Function, Argument):
         return -- the average of the arguments (float)
         """
         suma = 0
-        for argument in self._argument_values:
+        values = self.obtain_values_from_arguments()
+        for argument in values:
             suma = suma + argument
-        return suma/len(self._argument_values)
+        return suma/len(values)

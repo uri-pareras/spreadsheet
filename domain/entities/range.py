@@ -6,6 +6,7 @@ from argument import Argument
 from cell import CellIdentifier, Cell
 from spreadsheet import Spreadsheet
 
+
 class Range(Argument):
     """
     This class represents a range.
@@ -89,5 +90,5 @@ class Range(Argument):
         """
         values = []
         for cell in self._cells:
-            values.append(cell.value)
+            values.append(cell.content.value)
         return values

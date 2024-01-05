@@ -6,6 +6,7 @@ import abc
 from argument import Argument
 from operand import Operand
 
+
 class Value(abc.ABC):
     """
     This is an abstract class that represents a value.
@@ -20,21 +21,22 @@ class Value(abc.ABC):
         """
         self._value = value
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def value(self):
         """
         Getter for value.
         """
         return self._value
-    
-    @abc.abstractmethod
+
     @value.setter
+    @abc.abstractmethod
     def value(self, value):
         """
         Setter for value.
         """
         self._value = value
+
 
 class TextualValue(Value):
     """
@@ -65,7 +67,8 @@ class TextualValue(Value):
         if not isinstance(value, str):
             raise ValueError("The value must be a string.")
         self._value = value
-    
+
+
 class NumericalValue(Value, Argument, Operand):
     """
     This is a concrete implementation of the Value class.
