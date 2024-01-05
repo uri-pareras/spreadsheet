@@ -114,40 +114,57 @@ class Parser:
                 self.advance()
             else:
                 raise SyntaxError("Expected closing parenthesis")
-
         elif self.current_token and self.current_token.type == TokenType.FUNCTION:  # Function synthax comprobation.
-            self.advance()
-            # Opening parenthesis comprobation.
-            if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
-                self.advance()
-                # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
-                if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                    self.check_colon_and_id()
-                # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation. TODO: revisar aquesta comprovació cal?
-                elif self.current_token and self.current_token.type == TokenType.NUMBER:
-                    self.advance()
-                    if self.current_token and self.current_token.type == TokenType.SEMICOLON:
-                        self.advance()
-                        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                            self.check_colon_and_id()
-                        elif self.current_token and self.current_token.type == TokenType.NUMBER:
-                            self.advance()
-                        else:
-                            raise SyntaxError("Expected cell identifier or number")
-                    else:
-                        raise SyntaxError("Expected semicolon")
-                else:
-                    raise SyntaxError("Expected cell identifier or number")
-                if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
-                    self.advance()
-                else:
-                    raise SyntaxError("Expected closing parenthesis")
-            else:
-                raise SyntaxError("Expected opening parenthesis")
+            self.check_function()
         elif self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
         else:
             raise SyntaxError("Invalid factor")
+
+    def check_function(self):
+        """
+        This method checks the syntactical rules of the function.
+        """
+        self.advance()
+        # Opening parenthesis comprobation.
+        if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
+            self.advance()
+            # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
+            if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+                self.check_colon_and_id()
+            # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation.
+            elif self.current_token and self.current_token.type == TokenType.NUMBER:
+                self.advance()
+                if self.current_token and self.current_token.type == TokenType.SEMICOLON:
+                    self.advance()
+                    if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+                        self.check_colon_and_id()
+                    elif self.current_token and self.current_token.type == TokenType.NUMBER:
+                        self.advance()
+                    else:
+                        raise SyntaxError("Expected cell identifier or number")
+                else:
+                    raise SyntaxError("Expected semicolon")
+            elif self.current_token and self.current_token.type == TokenType.FUNCTION:
+                self.check_function()  # Recursive call to accept nested functions.
+                if self.current_token and self.current_token.type == TokenType.SEMICOLON:
+                    self.advance()
+                    if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+                        self.check_colon_and_id()
+                    elif self.current_token and self.current_token.type == TokenType.NUMBER:
+                        self.advance()
+                    else:
+                        raise SyntaxError("Expected cell identifier or number")
+                else:
+                    raise SyntaxError("Expected semicolon")
+            else:
+                raise SyntaxError("Expected cell identifier or number")
+            if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
+                self.advance()
+            else:
+                raise SyntaxError("Expected closing parenthesis")
+        else:
+            raise SyntaxError("Expected opening parenthesis")
 
     def check_colon_and_id(self):
         """
@@ -170,7 +187,7 @@ if __name__ == "__main__":
     tokenizer = Tokenizer()
     parser = Parser()
 
-    string_to_parse = "A1 + MAX(9;A1:B2) * (10 - 4)"
+    string_to_parse = "A1 + MAX(MIN(MAX(2;5);3);A1:B2) * (10 - 4)"
     tokens = list(tokenizer.tokenize(string_to_parse))
     result = parser.parse(tokens)
     for token in result:
