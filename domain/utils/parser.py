@@ -131,32 +131,18 @@ class Parser:
             self.advance()
             # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
             if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                self.check_colon_and_id()
+                self.advance()
+                self.check_colon()
+                self.check_cell_id()
             # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation.
             elif self.current_token and self.current_token.type == TokenType.NUMBER:
                 self.advance()
-                if self.current_token and self.current_token.type == TokenType.SEMICOLON:
-                    self.advance()
-                    if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                        self.check_colon_and_id()
-                    elif self.current_token and self.current_token.type == TokenType.NUMBER:
-                        self.advance()
-                    else:
-                        raise SyntaxError("Expected cell identifier or number")
-                else:
-                    raise SyntaxError("Expected semicolon")
+                self.check_semicolon()
+                self.check_cell_id_or_number()
             elif self.current_token and self.current_token.type == TokenType.FUNCTION:
                 self.check_function()  # Recursive call to accept nested functions.
-                if self.current_token and self.current_token.type == TokenType.SEMICOLON:
-                    self.advance()
-                    if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                        self.check_colon_and_id()
-                    elif self.current_token and self.current_token.type == TokenType.NUMBER:
-                        self.advance()
-                    else:
-                        raise SyntaxError("Expected cell identifier or number")
-                else:
-                    raise SyntaxError("Expected semicolon")
+                self.check_semicolon()
+                self.check_cell_id_or_number()
             else:
                 raise SyntaxError("Expected cell identifier or number")
             if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
@@ -166,19 +152,36 @@ class Parser:
         else:
             raise SyntaxError("Expected opening parenthesis")
 
-    def check_colon_and_id(self):
+    def check_cell_id_or_number(self):
         """
         This method is done only to avoid code duplication.
         """
-        self.advance()
+        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+            self.advance()
+            self.check_colon()
+            self.check_cell_id()
+        elif self.current_token and self.current_token.type == TokenType.NUMBER:
+            self.advance()
+        else:
+            raise SyntaxError("Expected cell identifier or number")
+
+    def check_semicolon(self):
+        if self.current_token and self.current_token.type == TokenType.SEMICOLON:
+            self.advance()
+        else:
+            raise SyntaxError("Expected semicolon")
+
+    def check_colon(self):
         if self.current_token and self.current_token.type == TokenType.COLON:
             self.advance()
-            if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-                self.advance()
-            else:
-                raise SyntaxError("Expected cell identifier")
         else:
             raise SyntaxError("Expected colon")
+
+    def check_cell_id(self):
+        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
+            self.advance()
+        else:
+            raise SyntaxError("Expected cell identifier")
 
 
 # ======================================================================================================================
