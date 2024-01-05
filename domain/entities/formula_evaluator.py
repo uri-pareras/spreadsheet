@@ -3,9 +3,9 @@ This file contains the formula evaluator class and its subclasses.
 """
 from formula_component import FormulaComponent, Parenthesis
 from formula_operator import Operator
+from operand import Operand
 from domain.utils.tokenizer import Tokenizer, Token, TokenType
 from domain.utils.parser import Parser
-from operand import Operand
 import abc
 
 class FormulaEvaluator(abc.ABC):
@@ -31,7 +31,7 @@ class FormulaEvaluator(abc.ABC):
         return tokens
 
     @abc.abstractmethod
-    def evaluate(self, formula: list) -> float:
+    def evaluate_expression(self, formula: list) -> float:
         """
         This method evaluates the formula.
 
@@ -49,13 +49,27 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
     def __init__(self) -> None:
         super().__init__()
 
-    def convert_to_formula_components(tokens: list) -> list:
+    def evaluate_expression(self, formula: list) -> float:
+        """
+        This method evaluates the formula.
+
+        Keyword arguments:
+        formula -- the formula to be evaluated (str)
+        return -- the result of the evaluation (float)
+        """
+        expr = self.convert_to_formula_components(formula)
+        expr = self.generate_postfix_expression(expr)
+        return self.evaluate_postfix_expression(expr)
+        pass
+
+    def convert_to_formula_components(self, tokens: list) -> list:
         '''
         This method converts the list of tokens to a list of FormulaComponent objects.
         '''
+        pass
 
 
-    def generate_postfix_expression(expression: list) -> list:
+    def generate_postfix_expression(self, expression: list) -> list:
         '''
         This method generates the postfix expression from the list of FormulaComponent
         objects passed as argument. It uses the Shunting-yard algorithm, and outputs
@@ -81,8 +95,34 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
                     output.append(stack.pop())
                 stack.pop()
 
+        return output + stack[::-1]
+        # return output
+
+    def evaluate_postfix_expression(self, expression: list) -> float:
+        '''
+        This method evaluates the postfix expression passed as argument.
+        '''
+        stack = []
+        for component in expression:
+            if isinstance(component,Operand):
+                stack.append(component)
+            elif isinstance(component,Operator):
+                operand2 = stack.pop().get_value_as_operand()
+                operand1 = stack.pop().get_value_as_operand()
+                stack.append(component.compute(operand1,operand2))
+        return stack.pop().value
+
 from value import NumericalValue
 # Test generate_postfix_expression()
-expr = [NumericalValue(1), Operator("+"), NumericalValue(2), Operator("*"), NumericalValue(3)]
+expr = [Parenthesis(opens=True),NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
+        NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"), NumericalValue(1)]
 f = FormulaEvaluatorPostfix()
-print(f.generate_postfix_expression(expr))
+postfix_expr = f.generate_postfix_expression(expr)
+for item in postfix_expr:
+    try:
+        print(item.value)
+    except AttributeError:
+        try:
+            print(item._type)
+        except AttributeError:
+            print("()")
