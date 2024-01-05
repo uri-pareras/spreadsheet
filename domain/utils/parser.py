@@ -1,7 +1,7 @@
 """
 This file contains the Parser class implementation.
 """
-from tokenizer import Token, TokenType, Tokenizer
+from domain.utils.tokenizer import Token, TokenType, Tokenizer
 
 
 class Parser:
@@ -168,17 +168,17 @@ class Parser:
 
 # ======================================================================================================================
 # Example usage:
-tokenizer = Tokenizer()
-parser = Parser()
-
-string_to_parse = "A1 + MAX(9;A1:B2) * (10 - 4)"
-tokens = list(tokenizer.tokenize(string_to_parse))
-result = parser.parse(tokens)
-for token in result:
-    print(str(token.value))
-print("---------------")
-string_to_parse = "AB1 + PROMEDIO(A1:B2) * (D3 - 4) / C3 * P0"
-tokens = list(tokenizer.tokenize(string_to_parse))
-result = parser.parse(tokens)
-for token in result:
-    print(str(token.value))
+# tokenizer = Tokenizer()
+# parser = Parser()
+#
+# string_to_parse = "A1 + MAX(9;A1:B2) * (10 - 4)"
+# tokens = list(tokenizer.tokenize(string_to_parse))
+# result = parser.parse(tokens)
+# for token in result:
+#     print(str(token.value))
+# print("---------------")
+# string_to_parse = "AB1 + PROMEDIO(A1:B2) * (D3 - 4) / C3 * P0"
+# tokens = list(tokenizer.tokenize(string_to_parse))
+# result = parser.parse(tokens)
+# for token in result:
+#     print(str(token.value))

@@ -2,7 +2,6 @@
 This file contains the operand interface.   
 """
 from formula_component import FormulaComponent
-from value import Value
 import abc
 
 class Operand(FormulaComponent):  #TODO: Perque hereta de FormulaComponent?
