@@ -24,16 +24,16 @@ class Content(abc.ABC):
         """
         self._value = value
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def value(self):
         """
         Getter for value.
         """
         return self._value
 
-    @abc.abstractmethod
     @value.setter
+    @abc.abstractmethod
     def value(self, value):
         """
         Setter for value.
