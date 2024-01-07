@@ -176,3 +176,8 @@ class Promedio(Function, Argument):
         for argument in values:
             suma = suma + argument
         return suma/len(values)
+
+
+if __name__ == "__main__":
+    f = Promedio([1, 2, 3])
+    isinstance(f, Argument)

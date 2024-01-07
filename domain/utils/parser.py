@@ -112,6 +112,7 @@ class Parser:
             self.expression()
             self.check_closing_parenthesis()
         elif self.current_token and self.current_token.type == TokenType.FUNCTION:  # Function synthax comprobation.
+            self.advance()
             self.check_function()
         elif self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
@@ -122,54 +123,56 @@ class Parser:
         """
         This method checks the syntactical rules of the function.
         """
-        self.advance()
         # Opening parenthesis comprobation.
         self.check_opening_parenthesis()
-        # FUNC(CELL_IDENTIFIER:CELL_IDENTIFIER) comprobation.
-        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-            self.advance()
-            self.check_colon()
-            self.check_cell_id()
-        # FUNC(NUMBER;(NUMBER|CELL_IDENTIFIER)) comprobation.
-        elif self.current_token and self.current_token.type == TokenType.NUMBER:
-            self.advance()
-            self.check_semicolon()
-            self.check_cell_id_or_number()
-        elif self.current_token and self.current_token.type == TokenType.FUNCTION:
-            self.check_function()  # Recursive call to accept nested functions.
-            self.check_semicolon()
-            self.check_cell_id_or_number()
+        if self.is_argument():
+            while self.current_token.type == TokenType.SEMICOLON:
+                self.advance()
+                self.is_argument()
         else:
-            raise SyntaxError("Expected cell identifier, number or function")
+            raise SyntaxError("Expected argument.")
         self.check_closing_parenthesis()
 
-    def check_cell_id_or_number(self):
-        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-            self.advance()
-            self.check_colon()
-            self.check_cell_id()
-        elif self.current_token and self.current_token.type == TokenType.NUMBER:
-            self.advance()
-        else:
-            raise SyntaxError("Expected cell identifier or number")
+    def is_argument(self):
+        """
+        This method checks if the token is an argument.
+        It also advances the token index if the token is an argument.
+        Also does a recursive call to check_function if the token is a function.
 
-    def check_semicolon(self):
-        if self.current_token and self.current_token.type == TokenType.SEMICOLON:
+        Keyword arguments:
+        token_to_check -- the token to check (Token)
+        return -- True if the token is an argument, False otherwise (bool)
+        """
+        if self.is_range():
+            return True
+        elif self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
-        else:
-            raise SyntaxError("Expected semicolon")
+            return True
+        elif self.current_token.type == TokenType.NUMBER:
+            self.advance()
+            return True
+        elif self.current_token.type == TokenType.FUNCTION:
+            self.advance()
+            self.check_function()
+            return True
 
-    def check_colon(self):
-        if self.current_token and self.current_token.type == TokenType.COLON:
-            self.advance()
-        else:
-            raise SyntaxError("Expected colon")
+    def is_range(self):
+        """
+        This method checks if the token is a range.
+        It also advances the token index if the token is a range.
 
-    def check_cell_id(self):
-        if self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
-            self.advance()
-        else:
-            raise SyntaxError("Expected cell identifier")
+        Keyword arguments:
+        token_to_check -- the token to check (Token)
+        return -- True if the token is a range, False otherwise (bool)
+        """
+        if self.current_token.type == TokenType.CELL_IDENTIFIER:
+            if self._tokens[self.token_index + 1].type == TokenType.COLON:
+                if self._tokens[self.token_index + 2].type == TokenType.CELL_IDENTIFIER:
+                    self.advance()  # Advance for cell identifier.
+                    self.advance()  # Advance for colon.
+                    self.advance()  # Advance for cell identifier.
+                    return True
+        return False
 
     def check_closing_parenthesis(self):
         if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
@@ -196,7 +199,7 @@ if __name__ == "__main__":
     for token in result:
         print(str(token.value))
     print("---------------")
-    string_to_parse = "AB1 + PROMEDIO(A1:B2) * (D3 - 4) / C3 * P0"
+    string_to_parse = "AB1 + PROMEDIO(A1:B2;D2;3;MIN(2;3;A1)) * (D3 - 4) / C3 * P0"
     tokens = list(tokenizer.tokenize(string_to_parse))
     result = parser.parse(tokens)
     for token in result:
