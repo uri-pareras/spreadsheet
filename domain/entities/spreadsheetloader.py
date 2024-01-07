@@ -5,7 +5,8 @@ This class loads a spreadsheet from a file.
 """
 import abc
 from domain.entities.spreadsheet import Spreadsheet
-from domain.utils.utils import base26_to_int, int_to_base26
+from domain.utils.utils import int_to_base26
+from domain.entities.content import Formula
 
 
 class SpreadsheetLoader(abc.ABC):
@@ -35,9 +36,9 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
 
         Keyword arguments:
         file_path -- the path of the file (str)
-        return -- the spreadsheet (Spreadsheet)
+        return -- the spreadsheet_to_load (Spreadsheet)
         """
-        spreadsheet = Spreadsheet()
+        spreadsheet_to_load = Spreadsheet()
         with open(file_path) as spreadsheet_file:
             row_number = 1
             for line in spreadsheet_file:
@@ -45,6 +46,18 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
                 if line != "":
                     row_cells = line.split(";")
                     for column in range(len(row_cells)):
-                        spreadsheet.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
+                        spreadsheet_to_load.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
                 row_number += 1
-        return spreadsheet
+        return spreadsheet_to_load
+
+
+if __name__ == "__main__":
+    loader = SpreadsheetLoaderS2V()
+    # WARNING: the path of the file IS HARDCODED
+    spreadsheet = loader.load_spreadsheet("/home/marc/PycharmProjects/spreadsheet/tests/spreadsheet_test.s2v")
+    for cell_id in spreadsheet:
+        cell = spreadsheet.get_cell(cell_id)
+        if isinstance(cell.content, Formula):
+            print(cell.identifier.coordinate, cell.content.textual_representation)
+        else:
+            print(cell.identifier.coordinate, cell.content.value.value)

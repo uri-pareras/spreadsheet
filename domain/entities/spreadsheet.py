@@ -21,6 +21,12 @@ class Spreadsheet:
         """
         self._cells = {}  # TODO: which data structure?
 
+    def __iter__(self):
+        """
+        This method returns an iterator of the spreadsheet.
+        """
+        return iter(self._cells)
+
     @property
     def cells(self):  # TODO: is necessary?
         """
