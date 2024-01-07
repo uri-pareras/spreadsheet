@@ -2,9 +2,9 @@
 This file contains the Cell class.
 """
 
-from content import Content, NumericalContent
-from argument import Argument
-from operand import Operand
+from domain.entities.content import Content, NumericalContent
+from domain.entities.argument import Argument
+from domain.entities.operand import Operand
 import re
 
 

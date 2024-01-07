@@ -2,7 +2,7 @@
 This file contains the spreadsheet class.
 """
 
-from cell import Cell, CellIdentifier
+from domain.entities.cell import Cell, CellIdentifier
 
 
 class Spreadsheet:

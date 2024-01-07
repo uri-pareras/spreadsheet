@@ -2,9 +2,9 @@
 This file contains the Range class.
 """
 
-from argument import Argument
-from cell import CellIdentifier
-from spreadsheet import Spreadsheet
+from domain.entities.argument import Argument
+from domain.entities.cell import CellIdentifier
+from domain.entities.spreadsheet import Spreadsheet
 
 
 class Range(Argument):
