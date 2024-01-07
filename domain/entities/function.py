@@ -1,7 +1,7 @@
 """
 This file contains the function class.
 """
-from argument import Argument
+from domain.entities.argument import Argument
 import abc
 
 

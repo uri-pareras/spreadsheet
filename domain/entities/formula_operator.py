@@ -1,7 +1,7 @@
 """
 This file contains the operator class.
 """
-from formula_component import FormulaComponent
+from domain.entities.formula_component import FormulaComponent
 
 
 class Operator(FormulaComponent):

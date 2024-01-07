@@ -44,8 +44,8 @@ class ShuntingYard:
                 while stack and isinstance(stack[-1], Parenthesis) and stack[-1].opens():
                     output.append(stack.pop())
                 stack.pop()
-
-        return output + stack[::-1]
+        output.append(stack.pop())  # Don't return the parenthesis
+        return output
 
     @staticmethod
     def evaluate_postfix_expression(expression: list) -> float:

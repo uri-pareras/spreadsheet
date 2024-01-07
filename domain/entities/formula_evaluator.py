@@ -1,19 +1,20 @@
 """
 This file contains the formula evaluator class and its subclasses. 
 """
-from formula_component import Parenthesis
-from formula_operator import Operator
+from domain.entities.formula_component import Parenthesis
+from domain.entities.formula_operator import Operator
 from domain.utils.tokenizer import Tokenizer
 from domain.utils.parser import Parser
 import abc
-from value import NumericalValue
-from spreadsheet import Spreadsheet
-from cell import CellIdentifier
-from range import Range
+from domain.entities.value import NumericalValue
+from domain.entities.spreadsheet import Spreadsheet
+from domain.entities.cell import CellIdentifier
+from domain.entities.range import Range
 from domain.utils.tokenizer import TokenType, Token
-from function import Suma, Max, Min, Promedio
+from domain.entities.function import Suma, Max, Min, Promedio
 from domain.utils.shunting_yard_algorithm import ShuntingYard
 from operand import Operand
+
 
 class FormulaEvaluator(abc.ABC):
     """
@@ -193,6 +194,6 @@ if __name__ == "__main__":
             print(item.value)
         except AttributeError:
             try:
-                print(type(item))
+                print(item._type)
             except AttributeError:
                 print("()")

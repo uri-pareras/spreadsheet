@@ -3,7 +3,7 @@ This file contains the Content abstarct class and its implementations.
 """
 
 import abc
-from value import Value, TextualValue, NumericalValue
+from domain.entities.value import Value, TextualValue, NumericalValue
 
 
 class Content(abc.ABC):

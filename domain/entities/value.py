@@ -3,8 +3,8 @@ This file contains the value abstract class and its implementations.
 """
 
 import abc
-from argument import Argument
-from operand import Operand
+from domain.entities.argument import Argument
+from domain.entities.operand import Operand
 
 
 class Value(abc.ABC):
