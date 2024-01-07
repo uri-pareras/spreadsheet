@@ -177,17 +177,17 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
 
 if __name__ == "__main__":
     # Test generate_postfix_expression()
-    expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
-            NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
-            NumericalValue(1)]
+    # expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
+    #         NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
+    #         NumericalValue(1)]
     s = Spreadsheet()
     f = FormulaEvaluatorPostfix(s)
-    # tokens_list = [Token(TokenType.OPENING_PARENTHESIS,"("), Token(TokenType.NUMBER,"5"),
-    #                Token(TokenType.OPERATOR,"*"), Token(TokenType.NUMBER, "4"), Token(TokenType.OPERATOR, "+"),
-    #                Token(TokenType.NUMBER,"3"), Token(TokenType.OPERATOR,"*"),
-    #                Token(TokenType.NUMBER,"2"),Token(TokenType.CLOSING_PARENTHESIS, ")"),
-    #                Token(TokenType.OPERATOR,"-"), Token(TokenType.OPERATOR,"1")]
-    # expr = f.convert_to_formula_components(tokens_list)
+    tokens_list = [Token(TokenType.OPENING_PARENTHESIS,"("), Token(TokenType.NUMBER,"5"),
+                   Token(TokenType.OPERATOR,"*"), Token(TokenType.NUMBER, "4"), Token(TokenType.OPERATOR, "+"),
+                   Token(TokenType.NUMBER,"3"), Token(TokenType.OPERATOR,"*"),
+                   Token(TokenType.NUMBER,"2"),Token(TokenType.CLOSING_PARENTHESIS, ")"),
+                   Token(TokenType.OPERATOR,"-"), Token(TokenType.NUMBER,"1")]
+    expr = f.convert_to_formula_components(tokens_list)
     postfix_expr = f.shunting_yard.generate_postfix_expression(expr)
     for item in postfix_expr:
         try:
