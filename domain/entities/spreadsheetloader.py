@@ -51,10 +51,13 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
                 if line != "":
                     row_cells = line.split(";")
                     for column in range(len(row_cells)):
-                        if row_cells[column][0] == "=" and "," in row_cells[column]:
+                        string_value = row_cells[column]
+                        if row_cells[column] == "":
+                            pass
+                        elif row_cells[column][0] == "=" and "," in row_cells[column]:
                             # If there is a comma in a formula, replace it with a semicolon
                             row_cells[column] = row_cells[column].replace(",", ";")
-                        else:
+                        elif "," in row_cells[column]:
                             raise ValueError("The file is not valid.")
                         try:
                             spreadsheet_to_load.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
