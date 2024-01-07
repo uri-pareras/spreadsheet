@@ -30,6 +30,7 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
     """
     This class represents a spreadsheet loader.
     """
+
     def load_spreadsheet(self, file_path: str) -> Spreadsheet:
         """
         This method loads the spreadsheet from a S2V file.
@@ -38,6 +39,10 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
         file_path -- the path of the file (str)
         return -- the spreadsheet_to_load (Spreadsheet)
         """
+        if not isinstance(file_path, str):
+            raise ValueError("The file path must be a string.")
+        if not file_path.endswith(".s2v"):
+            raise ValueError("The file must be a .s2v file.")
         spreadsheet_to_load = Spreadsheet()
         with open(file_path) as spreadsheet_file:
             row_number = 1
@@ -46,7 +51,15 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
                 if line != "":
                     row_cells = line.split(";")
                     for column in range(len(row_cells)):
-                        spreadsheet_to_load.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
+                        if row_cells[column][0] == "=" and "," in row_cells[column]:
+                            # If there is a comma in a formula, replace it with a semicolon
+                            row_cells[column] = row_cells[column].replace(",", ";")
+                        else:
+                            raise ValueError("The file is not valid.")
+                        try:
+                            spreadsheet_to_load.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
+                        except:  # Any exception treated as invalid file
+                            raise ValueError("The file is not valid.")
                 row_number += 1
         return spreadsheet_to_load
 
