@@ -88,7 +88,7 @@ class Tokenizer:
             elif semicolon:
                 yield Token(TokenType.SEMICOLON, semicolon)
             elif comma:
-                yield Token(TokenType.COMMA, comma)
+                raise SyntaxError("Comma not allowed")
             elif func:
                 yield Token(TokenType.FUNCTION, func.upper())  # Converting function name to uppercase
             else:
