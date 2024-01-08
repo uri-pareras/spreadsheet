@@ -45,14 +45,14 @@ class CellIdentifier:
         coordinate -- the coordinate of the cell (str)
         return -- True if the coordinate is valid and False otherwise (bool)
         """
-        first_number_index = 0
+        first_number_index = len(coordinate)
         for i, c in enumerate(coordinate):
             if c.isdigit():
                 first_number_index = i
                 break
         if first_number_index == 0:
             raise ValueError("The column must be a string of letters.")
-        if first_number_index == len(coordinate) - 1:
+        if first_number_index == len(coordinate):
             raise ValueError("The row must be a string of numbers.")
         column = coordinate[:first_number_index]
         row = coordinate[first_number_index:]
@@ -163,15 +163,15 @@ class Cell(Argument, Operand):
             raise ValueError("The dependencies must be a list.")
         self._depends_on_me = dependencies
 
-    def add_dependency(self, dependency: CellIdentifier):
+    def add_dependency(self, dependency: 'Cell'):
         """
         This method adds a dependency to the attribute _dependencies.
 
         keyword arguments:
-        dependency -- the dependency to add (CellIdentifier)
+        dependency -- the dependency to add (Cell)
         """
-        if not isinstance(dependency, CellIdentifier):  # TODO: CellIdentifier or Cell?
-            raise ValueError("The dependency must be a CellIdentifier.")
+        if not isinstance(dependency, Cell):
+            raise ValueError("The dependency must be a Cell.")
         self._depends_on_me.append(dependency)
     
     def remove_dependency(self, dependency: CellIdentifier):
