@@ -13,7 +13,9 @@ from domain.entities.range import Range
 from domain.utils.tokenizer import TokenType, Token
 from domain.entities.function import Suma, Max, Min, Promedio
 from domain.utils.shunting_yard_algorithm import ShuntingYard
-from operand import Operand
+from domain.utils.dependency_manager import DependencyManager
+from domain.entities.cell import Cell
+from domain.entities.content import Formula
 
 
 class FormulaEvaluator(abc.ABC):
@@ -25,53 +27,7 @@ class FormulaEvaluator(abc.ABC):
         self.tokenizer = Tokenizer()
         self.parser = Parser()
         self.shunting_yard = ShuntingYard()
-        # self.dependency_manager = DependencyManager()
-
-    def generate_expression(self, formula: str) -> list:
-        """
-        This method generates the expression from the formula.
-
-        Keyword arguments:
-        formula -- the formula to be evaluated (str)
-        return -- the list of tokens (list)
-        """
-        tokens = self.tokenizer.tokenize(formula)
-        tokens = self.parser.parse(tokens)
-        # TODO: Manage dependencies
-        return tokens
-
-    @abc.abstractmethod
-    def evaluate_expression(self, formula: list) -> float:
-        """
-        This method evaluates the formula.
-
-        Keyword arguments:
-        formula -- the formula to be evaluated (str)
-        return -- the result of the evaluation (float)
-        """
-        pass
-
-
-class FormulaEvaluatorPostfix(FormulaEvaluator):
-    """
-    This class represents a postfix formula evaluator.
-    """
-
-    def __init__(self,  spreadsheet: Spreadsheet) -> None:
-        super().__init__(spreadsheet)
-
-    def evaluate_expression(self, formula: list) -> float:
-        """
-        This method evaluates the formula.
-
-        Keyword arguments:
-        formula -- the formula to be evaluated (str)
-        return -- the result of the evaluation (float)
-        """
-        expression = self.convert_to_formula_components(formula)
-        expression = self.shunting_yard.generate_postfix_expression(expression)
-        return self.shunting_yard.evaluate_postfix_expression(expression)
-        pass
+        self.dependency_manager = DependencyManager(spreadsheet)
 
     def convert_to_formula_components(self, tokens: list) -> list:
         """
@@ -174,21 +130,76 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
 
         return components
 
+    def generate_expression(self, formula: Cell) -> list:
+        """
+        This method generates the expression from the formula.
+
+        Keyword arguments:
+        formula -- the formula to be evaluated (str)
+        return -- the list of tokens (list)
+        """
+
+        tokens = list(self.tokenizer.tokenize(formula.content.textual_representation))
+        print(tokens)
+        tokens = self.parser.parse(tokens)
+        expression = self.convert_to_formula_components(tokens)
+        if self.dependency_manager.detect_circular_dependencies(formula):
+            raise ValueError("Circular dependencies detected.")
+        return expression
+
+    @abc.abstractmethod
+    def evaluate_expression(self, formula: list) -> float:
+        """
+        This method evaluates the formula.
+
+        Keyword arguments:
+        formula -- the formula to be evaluated (str)
+        return -- the result of the evaluation (float)
+        """
+        pass
+
+
+class FormulaEvaluatorPostfix(FormulaEvaluator):
+    """
+    This class represents a postfix formula evaluator.
+    """
+
+    def __init__(self,  spreadsheet: Spreadsheet) -> None:
+        super().__init__(spreadsheet)
+
+    def evaluate_expression(self, formula: list) -> float:
+        """
+        This method evaluates the formula.
+
+        Keyword arguments:
+        formula -- the formula to be evaluated (str)
+        return -- the result of the evaluation (float)
+        """
+
+        postfix_expression = self.shunting_yard.generate_postfix_expression(formula)
+        return self.shunting_yard.evaluate_postfix_expression(postfix_expression)
+        pass
+
 
 if __name__ == "__main__":
     # Test generate_postfix_expression()
-    expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
-            NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
-            NumericalValue(1)]
+    # expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
+    #         NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
+    #         NumericalValue(1)]
     s = Spreadsheet()
-    f = FormulaEvaluatorPostfix(s)
+    form_eval = FormulaEvaluatorPostfix(s)
+
+    formula = Cell(CellIdentifier("A1"), Formula("(5*4+3*2)-1"))
+    # s.add_cell(formula)
+    expr = form_eval.generate_expression(formula)
+
     # tokens_list = [Token(TokenType.OPENING_PARENTHESIS,"("), Token(TokenType.NUMBER,"5"),
     #                Token(TokenType.OPERATOR,"*"), Token(TokenType.NUMBER, "4"), Token(TokenType.OPERATOR, "+"),
     #                Token(TokenType.NUMBER,"3"), Token(TokenType.OPERATOR,"*"),
     #                Token(TokenType.NUMBER,"2"),Token(TokenType.CLOSING_PARENTHESIS, ")"),
     #                Token(TokenType.OPERATOR,"-"), Token(TokenType.OPERATOR,"1")]
     # expr = f.convert_to_formula_components(tokens_list)
-    postfix_expr = f.shunting_yard.generate_postfix_expression(expr)
+    postfix_expr = form_eval.shunting_yard.generate_postfix_expression(expr)
     for item in postfix_expr:
         try:
             print(item.value)
@@ -197,3 +208,5 @@ if __name__ == "__main__":
                 print(item._type)
             except AttributeError:
                 print("()")
+    print("RESULT:")
+    print(form_eval.evaluate_expression(expr))
