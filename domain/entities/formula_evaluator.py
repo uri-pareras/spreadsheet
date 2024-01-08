@@ -61,7 +61,7 @@ class FormulaEvaluator(abc.ABC):
             arguments = []
             while tokens[i].type != TokenType.CLOSING_PARENTHESIS:
                 argument = []
-                while tokens[i].type != TokenType.SEMICOLON:
+                while tokens[i].type != TokenType.SEMICOLON and tokens[i].type != TokenType.CLOSING_PARENTHESIS:
                     if tokens[i].type == TokenType.NUMBER:
                         argument.append(NumericalValue(float(tokens[i].value)))
                     elif tokens[i].type == TokenType.OPERATOR:
@@ -85,9 +85,8 @@ class FormulaEvaluator(abc.ABC):
                     else:
                         raise ValueError("Invalid expression.")
                     i += 1
-                arguments.append(argument.pop(-1))
-            pass
-            i += 1
+                if argument: arguments.append(argument.pop(-1))
+                if i < (len(tokens) - 1) and tokens[i].type != TokenType.CLOSING_PARENTHESIS: i += 1
 
             # Create function object
             if func_type == "SUMA":
@@ -189,7 +188,7 @@ if __name__ == "__main__":
     s = Spreadsheet()
     form_eval = FormulaEvaluatorPostfix(s)
 
-    formula = Cell(CellIdentifier("A1"), Formula("(5*4+3*2)-1"))
+    formula = Cell(CellIdentifier("A1"), Formula("(5*4+3*2)-MAX(4;MIN(2;3))"))
     # s.add_cell(formula)
     expr = form_eval.generate_expression(formula)
 
