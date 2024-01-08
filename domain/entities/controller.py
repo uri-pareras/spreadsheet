@@ -29,19 +29,24 @@ class Controller:
         """
         This method processes a command and calls the corresponding method.
         """
+
         match command[0]:
             case "C":
                 self.create_new_spreadsheet()
                 self.render_spreadsheet()
+                self._user_interface.command_run_successfully("C")
             case "E":
                 self.edit_cell(command[1], command[2])
                 self.render_spreadsheet()
+                self._user_interface.command_run_successfully("E")
             case "L":
                 self.load_spreadsheet_from_file(command[1])
                 self.render_spreadsheet()
+                self._user_interface.command_run_successfully("L")
             case "S":
                 self.save_spreadsheet_to_file(command[1])
                 self.render_spreadsheet()
+                self._user_interface.command_run_successfully("S")
             case "Q":
                 self.quit()
             case _:
