@@ -119,7 +119,7 @@ class Formula(Content):
     It represents a formula.
     """
 
-    def __init__(self, value: NumericalValue):
+    def __init__(self, textual_representation: str):
         """
         This method initializes the formula.
 
@@ -128,10 +128,10 @@ class Formula(Content):
 
         Attributes:
         textual_representation -- the textual representation of the formula (str)
-        expression -- the expression of the formula (list)
+        expression -- the expression of the formula (list of FormulaComponents)
         """
-        super().__init__(value)
-        self._textual_representation = None
+        super().__init__(NumericalValue(0))
+        self._textual_representation = textual_representation
         self._expression = []
 
     @property
@@ -178,6 +178,6 @@ class Formula(Content):
         """
         Setter for expression.
         """
-        if not isinstance(expression, list):  # TODO: a list of formula components
+        if not isinstance(expression, list):  # A list of formula components
             raise ValueError("The expression must be a list.")
         self._expression = expression
