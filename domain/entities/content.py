@@ -119,7 +119,7 @@ class Formula(Content):
     It represents a formula.
     """
 
-    def __init__(self, value: NumericalValue):
+    def __init__(self, textual_representation: str):
         """
         This method initializes the formula.
 
@@ -130,8 +130,9 @@ class Formula(Content):
         textual_representation -- the textual representation of the formula (str)
         expression -- the expression of the formula (list)
         """
+        value = NumericalValue(0)
         super().__init__(value)
-        self._textual_representation = None
+        self._textual_representation = textual_representation
         self._expression = []
 
     @property

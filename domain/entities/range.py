@@ -5,6 +5,7 @@ This file contains the Range class.
 from domain.entities.argument import Argument
 from domain.entities.cell import CellIdentifier
 from domain.entities.spreadsheet import Spreadsheet
+from domain.utils.utils import base26_to_int, int_to_base26
 
 
 class Range(Argument):
@@ -55,22 +56,6 @@ class Range(Argument):
         end_column -- the end column (str)
         return -- the list of columns (list)
         """
-        # Function to convert a string to an integer in base-26
-        def base26_to_int(s):
-            result_int = 0
-            for c in s:
-                result_int = result_int * 26 + ord(c) - ord('A') + 1
-            return result_int - 1  # Subtract 1 for 0-indexing
-
-        # Function to convert an integer to a string in base-26
-        def int_to_base26(num):
-            result_b26 = ''
-            while num >= 0:
-                result_b26 = chr(num % 26 + ord('A')) + result_b26
-                num //= 26
-                num -= 1  # Subtract 1 for 0-indexing
-            return result_b26
-
         # Convert the start and end strings to integers
         start_num = base26_to_int(start_column)
         end_num = base26_to_int(end_column)

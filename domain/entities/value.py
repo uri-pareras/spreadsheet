@@ -37,6 +37,15 @@ class Value(abc.ABC):
         """
         self._value = value
 
+    def get_value_string(self):
+        """
+        This method returns the value as a string.
+
+        Keyword arguments:
+        return -- the value as a string (str)
+        """
+        return str(self._value)
+
 
 class TextualValue(Value):
     """
