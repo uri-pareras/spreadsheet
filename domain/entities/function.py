@@ -2,10 +2,11 @@
 This file contains the function class.
 """
 from domain.entities.argument import Argument
+from domain.entities.operand import Operand
 import abc
 
 
-class Function(abc.ABC):
+class Function(Argument, Operand, abc.ABC):
     """
     This is an abstract class that represents a function.
     """
@@ -58,7 +59,7 @@ class Function(abc.ABC):
         return [self.compute()]
 
 
-class Max(Function, Argument):  # TODO: REVISAR Argument and get_values_as_argument??
+class Max(Function):  # TODO: REVISAR Argument and get_values_as_argument??
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
@@ -90,7 +91,7 @@ class Max(Function, Argument):  # TODO: REVISAR Argument and get_values_as_argum
         return max_value
 
 
-class Min(Function, Argument):
+class Min(Function):
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
@@ -121,7 +122,7 @@ class Min(Function, Argument):
         return min_value
 
 
-class Suma(Function, Argument):
+class Suma(Function):
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
@@ -151,7 +152,7 @@ class Suma(Function, Argument):
         return suma
 
 
-class Promedio(Function, Argument):
+class Promedio(Function):
     """
     This class is a concrete implementation of the Function class.
     It also inherits from the Argument interface to obtain the 
