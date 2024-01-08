@@ -36,3 +36,5 @@ class DependencyManager:
                 return True
             else:
                 return self.detect_circular_dependencies(dependency)
+
+        return False
