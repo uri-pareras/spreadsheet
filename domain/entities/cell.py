@@ -93,6 +93,20 @@ class CellIdentifier:
         """
         return self._row
 
+    def __eq__(self, other):
+        """
+        This method checks if two cell identifiers are equal.
+        """
+        if isinstance(other, CellIdentifier):
+            return self.coordinate == other.coordinate
+        else:
+            return False
+
+    def __hash__(self):
+        """
+        This method returns the hash of the cell identifier.
+        """
+        return hash(self.coordinate)
 
 class Cell(Argument, Operand):
     """
