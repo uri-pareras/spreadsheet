@@ -2,6 +2,8 @@
 This file contains the implementation of the user interface.
 """
 import abc
+from domain.entities.spreadsheet import Spreadsheet
+from domain.entities.content import Formula
 
 
 class UserInterface(abc.ABC):
@@ -15,8 +17,9 @@ class UserInterface(abc.ABC):
         """
         pass
 
+    @staticmethod
     @abc.abstractmethod
-    def render_spreadsheet(self) -> None:
+    def render_spreadsheet(spreadsheet: Spreadsheet) -> None:
         """
         This method prints the spreadsheet.
         """
@@ -84,11 +87,17 @@ class TextualUserInterface(UserInterface):
             print("Invalid command.")
             return False
 
-    def render_spreadsheet(self) -> None:
+    @staticmethod
+    def render_spreadsheet(spreadsheet: Spreadsheet) -> None:
         """
         This method prints the spreadsheet.
         """
-        pass
+        for cell_id in spreadsheet:
+            cell = spreadsheet.get_cell(cell_id)
+            if isinstance(cell.content, Formula):
+                print(cell.identifier.coordinate, cell.content.textual_representation)
+            else:
+                print(cell.identifier.coordinate, cell.content.value.value)
 
     def render_available_commands(self) -> None:
         """

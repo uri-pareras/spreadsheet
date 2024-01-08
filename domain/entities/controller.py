@@ -5,6 +5,7 @@ from domain.entities.spreadsheet import Spreadsheet
 from domain.IO.user_interface import TextualUserInterface
 from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V
 from domain.IO.spreadsheetsaver import SpreadsheetSaverS2V
+from domain.entities.content import Formula
 
 
 class Controller:
@@ -50,7 +51,7 @@ class Controller:
         """
         This method renders the spreadsheet.
         """
-        self._user_interface.render_spreadsheet()  # TODO: Implement this method
+        self._user_interface.render_spreadsheet(self._spreadsheet)
 
     def quit(self) -> None:
         """
