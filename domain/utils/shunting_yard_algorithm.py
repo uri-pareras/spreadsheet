@@ -4,6 +4,7 @@ This file contains the shunting yard algorithm class implementation.
 from domain.entities.formula_component import Parenthesis
 from domain.entities.operand import Operand
 from domain.entities.formula_operator import Operator
+from domain.entities.value import NumericalValue
 
 
 class ShuntingYard:
@@ -31,20 +32,19 @@ class ShuntingYard:
         for component in expression:
             if isinstance(component, Operand):
                 output.append(component)
-            elif isinstance(component, Operator):
-                while stack and isinstance(stack[-1], Operator):
-                    if component.precedence() <= stack[-1].precedence():
-                        output.append(stack.pop())
-                    else:
-                        break
-                stack.append(component)
             elif isinstance(component, Parenthesis) and component.opens():
                 stack.append(component)
             elif isinstance(component, Parenthesis) and not component.opens():
-                while stack and isinstance(stack[-1], Parenthesis) and stack[-1].opens():
+                while stack and not (isinstance(stack[-1], Parenthesis) and stack[-1].opens()):
                     output.append(stack.pop())
                 stack.pop()
-        output.append(stack.pop())  # Don't return the parenthesis
+            elif isinstance(component, Operator):
+                while stack and not (isinstance(stack[-1], Parenthesis) and stack[-1].opens())\
+                        and component.precedence() <= stack[-1].precedence():
+                    output.append(stack.pop())
+                stack.append(component)
+        while stack:
+            output.append(stack.pop())  # Don't return the parenthesis
         return output
 
     @staticmethod
@@ -64,5 +64,5 @@ class ShuntingYard:
             elif isinstance(component, Operator):
                 operand2 = stack.pop().get_value_as_operand()
                 operand1 = stack.pop().get_value_as_operand()
-                stack.append(component.compute(operand1, operand2))
+                stack.append(NumericalValue(component.compute(operand1, operand2)))
         return stack.pop().value
