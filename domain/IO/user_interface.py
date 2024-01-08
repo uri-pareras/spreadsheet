@@ -112,7 +112,7 @@ class TextualUserInterface(UserInterface):
         for cell_id in spreadsheet:
             cell = spreadsheet.get_cell(cell_id)
             if isinstance(cell.content, Formula):
-                print(cell.identifier.coordinate, cell.content.textual_representation)
+                print(cell.identifier.coordinate, cell.content.textual_representation, cell.content.value.value)
             else:
                 print(cell.identifier.coordinate, cell.content.value.value)
 
