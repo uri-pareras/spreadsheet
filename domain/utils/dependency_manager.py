@@ -41,8 +41,8 @@ class DependencyManager:
                     if isinstance(argument, Cell):
                         dependencies.append(argument.identifier)
                     elif isinstance(argument, Range):
-                        for cell in argument.obtain_all_cell_ids():
-                            dependencies.append(cell.identifier)
+                        for cell_id in argument.obtain_all_cell_ids():
+                            dependencies.append(cell_id)
         return dependencies
 
     def remove_old_dependencies(self, cell: Cell):
