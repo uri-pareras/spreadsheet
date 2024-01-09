@@ -126,3 +126,15 @@ class NumericalValue(Value, Argument, Operand):
         return -- the value as an operand (Value)
         """
         return self._value
+
+    def get_value_string(self):
+        """
+        This method returns the value as a string.
+
+        Keyword arguments:
+        return -- the value as a string (str)
+        """
+        if self._value == int(self._value):
+            return str(int(self._value))
+        else:
+            return str(self._value)
