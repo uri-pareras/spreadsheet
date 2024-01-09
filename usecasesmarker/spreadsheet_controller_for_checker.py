@@ -1,3 +1,5 @@
+import abc
+
 
 class ISpreadsheetControllerForChecker:
 
@@ -16,6 +18,7 @@ class ISpreadsheetControllerForChecker:
     # @exception CircularDependencyException if the code detects that the strContent is
     # formula that introduces in the spreadsheet some circular dependency
 
+    @abc.abstractmethod
     def set_cell_content(self, coord, str_content):
         pass
 
@@ -33,6 +36,7 @@ class ISpreadsheetControllerForChecker:
     # @exception NoNumberException if the cell contains textual content whose value is a string that is not the textual
     # representation of a number
 
+    @abc.abstractmethod
     def get_cell_content_as_float(self, coord):
         pass
 
@@ -47,6 +51,7 @@ class ISpreadsheetControllerForChecker:
     #
     # @exception BadCoordinateException if the cellCoord argument does not represent a proper spreadsheet coordinate
 
+    @abc.abstractmethod
     def get_cell_content_as_string(self, coord):
         pass
 
@@ -60,6 +65,7 @@ class ISpreadsheetControllerForChecker:
     # @exception BadCoordinateException if the coord argument does not represent a legal coordinate in the spreadsheet
     # OR if the coord argument represents a legal coordinate BUT cell in this coordinate DOES NOT CONTAIN A FORMULA
 
+    @abc.abstractmethod
     def get_cell_formula_expression(self, coord):
         pass
 
@@ -71,6 +77,7 @@ class ISpreadsheetControllerForChecker:
     #
     # @exception SavingSpreadSheetException if something has gone wrong while trying to write the spreadsheet into the aforementioned file
 
+    @abc.abstractmethod
     def save_spreadsheet_to_file(self, s_name_in_user_dir):
         pass
 

@@ -16,6 +16,7 @@ from domain.utils.shunting_yard_algorithm import ShuntingYard
 from domain.utils.dependency_manager import DependencyManager
 from domain.entities.cell import Cell
 from domain.entities.content import Formula, NumericalContent
+from domain.exceptions.exceptions import CircularDependencyException, ContentException
 
 
 class FormulaEvaluator(abc.ABC):
@@ -55,7 +56,7 @@ class FormulaEvaluator(abc.ABC):
             if tokens[i + 1].type == TokenType.OPENING_PARENTHESIS:
                 i += 2
             else:
-                raise ValueError("Expected opening parenthesis after function name.")
+                raise ContentException("Expected opening parenthesis after function name.")
 
             # Obtain arguments
             arguments = []
@@ -65,10 +66,10 @@ class FormulaEvaluator(abc.ABC):
                     if tokens[i].type == TokenType.NUMBER:
                         argument.append(NumericalValue(float(tokens[i].value)))
                     elif tokens[i].type == TokenType.OPERATOR:
-                        raise ValueError("Operators are not allowed in function arguments.")
+                        raise ContentException("Operators are not allowed in function arguments.")
                     elif tokens[i].type == TokenType.OPENING_PARENTHESIS or tokens[
                         i].type == TokenType.CLOSING_PARENTHESIS:
-                        raise ValueError("Operations are not allowed in function arguments.")
+                        raise ContentException("Operations are not allowed in function arguments.")
                     elif tokens[i].type == TokenType.CELL_IDENTIFIER:
                         c = self.spreadsheet.get_cell(CellIdentifier(tokens[i].value))
                         if c is not None:
@@ -83,12 +84,12 @@ class FormulaEvaluator(abc.ABC):
                         if isinstance(start_arg_cell_id, CellIdentifier) and isinstance(end_arg_cell_id, CellIdentifier):
                             argument.append(Range(start_arg_cell_id, end_arg_cell_id, self.spreadsheet))
                         else:
-                            raise ValueError("The start and end of the range must be cells.")
+                            raise ContentException("The start and end of the range must be cells.")
                     elif tokens[i].type == TokenType.FUNCTION:
                         func, i = create_function(tokens, i)
                         argument.append(func)
                     else:
-                        raise ValueError("Invalid expression.")
+                        raise ContentException("Invalid expression.")
                     i += 1
                 if argument: arguments.append(argument.pop(-1))
                 if i < (len(tokens) - 1) and tokens[i].type != TokenType.CLOSING_PARENTHESIS: i += 1
@@ -129,12 +130,12 @@ class FormulaEvaluator(abc.ABC):
                 if isinstance(start_cell_id, CellIdentifier) and isinstance(end_cell_id, CellIdentifier):
                     components.append(Range(start_cell_id, end_cell_id, self.spreadsheet))
                 else:
-                    raise ValueError("The start and end of the range must be cells.")
+                    raise ContentException("The start and end of the range must be cells.")
             elif tokens[i].type == TokenType.FUNCTION:
                 func, i = create_function(tokens, i)
                 components.append(func)
             else:
-                raise ValueError("Invalid expression.")
+                raise ContentException("Invalid expression.")
             i += 1
 
         return components
@@ -154,7 +155,7 @@ class FormulaEvaluator(abc.ABC):
         formula_cell.depends_on = self.dependency_manager.get_dependencies(expression)
         self.dependency_manager.update_depends_on_me_lists(formula_cell.identifier, formula_cell.depends_on)
         if self.dependency_manager.detect_circular_dependencies(formula_cell.identifier, formula_cell):
-            raise ValueError("Circular dependencies detected.")
+            raise CircularDependencyException("Circular dependencies detected.")
         formula_cell.content.expression = expression
 
     @abc.abstractmethod

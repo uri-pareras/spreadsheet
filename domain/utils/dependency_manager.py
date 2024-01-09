@@ -6,6 +6,7 @@ from domain.entities.spreadsheet import Spreadsheet
 from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.function import Function
 from domain.entities.range import Range
+from domain.exceptions.exceptions import CircularDependencyException
 
 
 class DependencyManager:

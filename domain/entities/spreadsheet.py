@@ -5,6 +5,7 @@ This file contains the spreadsheet class.
 from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.content import Content, NumericalContent, TextualContent, Formula
 from domain.entities.value import NumericalValue, TextualValue
+from domain.exceptions.exceptions import ContentException, BadCoordinateException
 
 
 class Spreadsheet:
@@ -43,6 +44,10 @@ class Spreadsheet:
         cell_id -- the identifier of the cell (str)
         content -- the content of the cell (str)
         """
+        if not isinstance(cell_id, str):
+            raise BadCoordinateException("The cell identifier must be a string.")
+        if not isinstance(content_str, str):
+            raise ContentException("The content must be a string.")
         content_str = content_str.strip()
         cell = Cell(CellIdentifier(cell_id), NumericalContent(NumericalValue(0)))  # Create a cell with a default value
         if cell_id in self._cells:  # If the cell is already in the spreadsheet we get that cell to maintain dependencies
@@ -56,7 +61,7 @@ class Spreadsheet:
                 value_number = float(content_str)
             except ValueError:  # If it is not a formula or a number, it is text
                 if cell.depends_on_me:  # If any cell depends on this cell, we cannot change its content to text
-                    raise ValueError("The cell cannot be changed to text because it is used in a formula.")
+                    raise ContentException("The cell cannot be changed to text because it is used in a formula.")
                 value = TextualValue(content_str)
                 content = TextualContent(value)
                 cell.content = content

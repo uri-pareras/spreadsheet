@@ -70,6 +70,7 @@ class SavingSpreadSheetException(Exception):
         """
         self._message = message
 
+
 class ContentException(Exception):
     """
     This class represents an exception that is raised when the content is not valid.
