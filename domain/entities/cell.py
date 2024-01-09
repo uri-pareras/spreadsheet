@@ -2,7 +2,7 @@
 This file contains the Cell class.
 """
 
-from domain.entities.content import Content, NumericalContent
+from domain.entities.content import Content, NumericalContent, Formula
 from domain.entities.argument import Argument
 from domain.entities.operand import Operand
 import re
@@ -128,6 +128,7 @@ class Cell(Argument, Operand):
         self._identifier = identifier
         self._content = content
         self._depends_on_me = []
+        self._depends_on = []
     
     @property
     def identifier(self):
@@ -162,14 +163,14 @@ class Cell(Argument, Operand):
         self._content = content
 
     @property
-    def dependencies(self):
+    def depends_on_me(self):
         """
         Getter for dependencies.
         """
         return self._depends_on_me
     
-    @dependencies.setter
-    def dependencies(self, dependencies):
+    @depends_on_me.setter
+    def depends_on_me(self, dependencies):
         """
         Setter for dependencies.
         """
@@ -177,14 +178,30 @@ class Cell(Argument, Operand):
             raise ValueError("The dependencies must be a list.")
         self._depends_on_me = dependencies
 
-    def add_dependency(self, dependency: 'Cell'):
+    @property
+    def depends_on(self):
         """
-        This method adds a dependency to the attribute _dependencies.
+        Getter for dependencies.
+        """
+        return self._depends_on
+
+    @depends_on.setter
+    def depends_on(self, dependencies):
+        """
+        Setter for dependencies.
+        """
+        if not isinstance(dependencies, list):
+            raise ValueError("The dependencies must be a list.")
+        self._depends_on = dependencies
+
+    def add_dependency(self, dependency: CellIdentifier):
+        """
+        This method adds a dependency to the attribute _depends_on_me.
 
         keyword arguments:
-        dependency -- the dependency to add (Cell)
+        dependency -- the dependency to add (CellIdentifier)
         """
-        if not isinstance(dependency, Cell):
+        if not isinstance(dependency, CellIdentifier):
             raise ValueError("The dependency must be a Cell.")
         self._depends_on_me.append(dependency)
     
@@ -207,7 +224,7 @@ class Cell(Argument, Operand):
         return -- the values of the cell (list)
         """
         if isinstance(self._content, NumericalContent):
-            return [self._content.value]
+            return [self._content.value.value]
         else:  # This is redundant, but it is here to make it clear
             raise ValueError("The content must be a NumericalContent.")
     
@@ -218,7 +235,7 @@ class Cell(Argument, Operand):
         Keyword arguments:
         return -- the value of the cell (float)
         """
-        if isinstance(self._content, NumericalContent):
-            return self._content.value
+        if isinstance(self._content, NumericalContent) or isinstance(self._content, Formula):
+            return self._content.value.value
         else:
             raise ValueError("The content must be a NumericalContent.")
