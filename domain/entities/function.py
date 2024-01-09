@@ -3,6 +3,7 @@ This file contains the function class.
 """
 from domain.entities.argument import Argument
 from domain.entities.operand import Operand
+from domain.entities.value import NumericalValue
 import abc
 
 
@@ -19,6 +20,13 @@ class Function(Argument, Operand, abc.ABC):
         arguments -- the arguments of the function (list)
         """
         self._arguments = arguments
+
+    @property
+    def arguments(self):
+        """
+        Getter for arguments.
+        """
+        return self._arguments
 
     def obtain_values_from_arguments(self):
         """
