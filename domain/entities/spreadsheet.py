@@ -37,12 +37,17 @@ class Spreadsheet:
     def add_cell(self, cell_id: str, content_str: str) -> None:
         """
         This method adds a cell to the spreadsheet.
+        If the cell is already in the spreadsheet, it is overwritten.
 
         Keyword arguments:
         cell_id -- the identifier of the cell (str)
         content -- the content of the cell (str)
         """
         content_str = content_str.strip()
+
+        if cell_id in self._cells:  # If the cell is already in the spreadsheet, it is overwritten
+            self._cells.pop(cell_id)
+
         if content_str.startswith("="):  # Check if it is a formula
             formula_str = content_str[1:]
             formula = Formula(formula_str)
