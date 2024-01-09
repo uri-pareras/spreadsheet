@@ -28,6 +28,8 @@ class Operator(FormulaComponent):
         right_operand -- the right operand (float)
         return -- the result of the computation (float)
         """
+        if left_operand is None or right_operand is None:
+            return 0
         match self._type:  # python 3.10 or newer REQUIRED TODO: Add to readme?
             case "+":
                 return left_operand + right_operand
@@ -36,6 +38,8 @@ class Operator(FormulaComponent):
             case "*":
                 return left_operand * right_operand
             case "/":
+                if right_operand == 0:
+                    return 0
                 return left_operand / right_operand  #Todo: check if right_operand is 0
             case _:
                 raise ValueError("The operator is not valid.")

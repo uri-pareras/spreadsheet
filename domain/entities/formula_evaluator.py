@@ -75,7 +75,7 @@ class FormulaEvaluator(abc.ABC):
                         if c is not None:
                             argument.append(c)
                         else:  # if it doesn't exist, create it. Dependency manager will take care of the rest
-                            self.spreadsheet.add_cell(tokens[i].value, "0")
+                            self.spreadsheet.add_cell(Cell(CellIdentifier(tokens[i].value), NumericalContent(NumericalValue(None))))
                             argument.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
                     elif tokens[i].type == TokenType.COLON:
                         start_arg_cell_id = argument.pop(-1).identifier
