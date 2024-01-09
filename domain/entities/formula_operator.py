@@ -36,7 +36,7 @@ class Operator(FormulaComponent):
             case "*":
                 return left_operand * right_operand
             case "/":
-                return left_operand / right_operand
+                return left_operand / right_operand  #Todo: check if right_operand is 0
             case _:
                 raise ValueError("The operator is not valid.")
             

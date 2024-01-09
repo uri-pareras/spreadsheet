@@ -49,6 +49,7 @@ class SpreadsheetSaverS2V(SpreadsheetSaver):
 
         with open(file_path, 'w') as spreadsheet_file:
             cell_list = spreadsheet.get_cells()
+            cell_list = self.sort_cells(cell_list)
             for cell in cell_list:
                 while int(cell.identifier.row) != row_counter:
                     row_counter += 1
@@ -67,10 +68,23 @@ class SpreadsheetSaverS2V(SpreadsheetSaver):
                         raise ValueError("Unexpected content type.")
             spreadsheet_file.close()
 
+    @staticmethod
+    def sort_cells(cell_list: list) -> list:
+        """
+        This method sorts the cells of a spreadsheet by row and column.
+        Row and column can be more than one character.
+
+        Keyword arguments:
+        cell_list -- the list of cells (list)
+        """
+        if not isinstance(cell_list, list):
+            raise ValueError("The cell list must be a list.")
+        return sorted(cell_list, key=lambda cell: (int(cell.identifier.row), base26_to_int(cell.identifier.column)))
+
 
 if __name__ == "__main__":
     saver = SpreadsheetSaverS2V()
     loader = SpreadsheetLoaderS2V()
     # WARNING: the path of the file IS HARDCODED
-    spreadsheet = loader.load_spreadsheet(r"C:\Users\Marc Micolau\PycharmProjects\spreadsheet\tests\spreadsheet_test.s2v")
-    saver.save_spreadsheet(spreadsheet, r"C:\Users\Marc Micolau\PycharmProjects\spreadsheet\tests\test_s2v_saved.s2v")
+    #spreadsheet_test = loader.load_spreadsheet(r"C:\Users\Marc Micolau\PycharmProjects\spreadsheet\tests\spreadsheet_test.s2v")
+    #saver.save_spreadsheet(spreadsheet_test, r"C:\Users\Marc Micolau\PycharmProjects\spreadsheet\tests\test_s2v_saved.s2v")
