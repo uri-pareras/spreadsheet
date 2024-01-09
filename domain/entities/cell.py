@@ -6,6 +6,7 @@ from domain.entities.content import Content, NumericalContent, Formula
 from domain.entities.argument import Argument
 from domain.entities.operand import Operand
 import re
+from domain.exceptions.exceptions import BadCoordinateException
 
 
 class CellIdentifier:
@@ -26,7 +27,7 @@ class CellIdentifier:
         """
         # Check if the coordinate is valid
         if not isinstance(coordinate, str):
-            raise ValueError("The coordinate must be a string.")
+            raise BadCoordinateException("The coordinate must be a string.")
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
             
@@ -46,9 +47,9 @@ class CellIdentifier:
         return -- True if the coordinate is valid and False otherwise (bool)
         """
         if not isinstance(coordinate, str):
-            raise ValueError("The coordinate must be a string.")
+            raise BadCoordinateException("The coordinate must be a string.")
         elif coordinate == "":
-            raise ValueError("The coordinate cannot be empty.")
+            raise BadCoordinateException("The coordinate cannot be empty.")
         
         first_number_index = len(coordinate)
         for i, c in enumerate(coordinate):
@@ -56,16 +57,16 @@ class CellIdentifier:
                 first_number_index = i
                 break
         if first_number_index == 0: # If the first character is a number
-            raise ValueError("The column must be a string of letters.")
+            raise BadCoordinateException("The column must be a string of letters.")
         if first_number_index == len(coordinate):  # If there is no number
-            raise ValueError("The row must be a string of numbers.")
+            raise BadCoordinateException("The row must be a string of numbers.")
         
         column = coordinate[:first_number_index]
         row = coordinate[first_number_index:]
         if not column.isalpha():
-            raise ValueError("The column must be a string of letters.")
+            raise BadCoordinateException("The column must be a string of letters.")
         if not row.isdigit():
-            raise ValueError("The row must be a string of numbers.")
+            raise BadCoordinateException("The row must be a string of numbers.")
         return True
     
     @property
@@ -81,7 +82,7 @@ class CellIdentifier:
         Setter for the coordinate.
         """
         if not isinstance(coordinate, str):
-            raise ValueError("The coordinate must be a string.")
+            raise BadCoordinateException("The coordinate must be a string.")
         if self.coordinate_is_valid(coordinate):
             self._coordinate = coordinate
 

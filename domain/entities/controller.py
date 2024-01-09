@@ -9,9 +9,12 @@ from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V
 from domain.IO.spreadsheetsaver import SpreadsheetSaverS2V
 from domain.entities.content import Formula, Content, TextualContent, NumericalContent
 from domain.entities.formula_evaluator import FormulaEvaluatorPostfix
+from domain.entities.cell import CellIdentifier, Cell
+from domain.exceptions.exceptions import NoNumberException, ReadingSpreadSheetException, SavingSpreadSheetException, BadCoordinateException
+from usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
 
 
-class Controller:
+class Controller(ISpreadsheetControllerForChecker):
     def __init__(self):
         """
         This method initializes the controller of the spreadsheet application.
@@ -116,7 +119,6 @@ class Controller:
                     self._formula_evaluator.generate_expression(cell)
                     self._formula_evaluator.evaluate_expression(cell)
 
-
     def load_spreadsheet_from_file(self, file_path: str) -> None:
         """
         This method loads a spreadsheet from a file.
@@ -126,13 +128,14 @@ class Controller:
         """
         self._spreadsheet = Spreadsheet()  # create new spreadsheet
         loader = SpreadsheetLoaderS2V()  # create loader
-        cells_to_load = loader.load_spreadsheet(file_path)
-        for cell in cells_to_load:
-            try:
+        try:
+            cells_to_load = loader.load_spreadsheet(file_path)
+            for cell in cells_to_load:
                 self.edit_cell(cell[0], cell[1])
-            except:  # Any exception treated as invalid file
-                # raise ValueError("The file is not valid.")
-                pass
+        except ValueError:  # Any exception treated as invalid file
+            raise ReadingSpreadSheetException("The file is not valid.")
+        except FileNotFoundError:
+            raise ReadingSpreadSheetException("The file does not exist.")
 
     def save_spreadsheet_to_file(self, file_path: str) -> None:
         """
@@ -142,4 +145,55 @@ class Controller:
         file_path -- the path of the file (str)
         """
         saver = SpreadsheetSaverS2V()
-        saver.save_spreadsheet(self._spreadsheet, file_path)
+        try:
+            saver.save_spreadsheet(self._spreadsheet, file_path)
+        except ValueError:
+            raise SavingSpreadSheetException("The file is not valid.")
+        except:
+            raise SavingSpreadSheetException("The file could not be saved.")
+
+    def get_cell_content_as_float(self, coord: str) -> float:
+        """
+        This method returns the content of a cell as a float.
+
+        Keyword arguments:
+        coord -- the coordinate of the cell (str)
+        """
+        cell = self._spreadsheet.get_cell(CellIdentifier(coord))
+        try:
+            float(cell.content.value.value)
+        except ValueError:
+            raise NoNumberException("The cell does not contain a number.")
+
+    def get_cell_content_as_string(self, coord: str) -> str:
+        """
+        Parameters
+        coord	a string representing a coordinate in spreadsheet ('A10', for instance).
+
+        Returns
+        a string version of the content of a cell. If the cell contains a textual
+        content it directly shall return its string value. If the cell contains a
+        numerical content, it returns the textual representation of the number.
+        If the cell content is a formula, it returns the string representing the
+        number resulting of evaluating such formula.
+        """
+        cell = self._spreadsheet.get_cell(CellIdentifier(coord))  # This must raise the BadCoordinateException
+        return str(cell.content.value.value)
+
+    def get_cell_formula_expression(self, coord: str) -> str:
+        """
+        Parameters
+        coord	a string representing a coordinate in spreadsheet ('A10', for instance).
+
+        Returns
+        a string representing the formula expression of a cell. If the cell does not
+        contain a formula, it returns None.
+        """
+        cell: Cell = self._spreadsheet.get_cell(CellIdentifier(coord))  # This must raise the BadCoordinateException
+        if isinstance(cell.content, Formula):
+            return cell.content.textual_representation
+        else:
+            raise BadCoordinateException("The cell does not contain a formula.")
+
+    def set_cell_content(self, coord: str, str_content: str):
+        self.edit_cell(coord, str_content)

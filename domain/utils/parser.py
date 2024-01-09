@@ -2,6 +2,7 @@
 This file contains the Parser class implementation.
 """
 from domain.utils.tokenizer import Token, TokenType, Tokenizer
+from domain.exceptions.exceptions import ContentException
 
 
 class Parser:
@@ -50,10 +51,10 @@ class Parser:
         token_list -- the list of tokens (list)
         """
         if len(token_list) == 0:
-            raise SyntaxError("Empty formula")
+            raise ContentException("Empty formula")
         for item in token_list:
             if not isinstance(item, Token):
-                raise SyntaxError("Invalid token")
+                raise ContentException("Invalid token")
         self._tokens = token_list
         self.advance()
 
@@ -117,7 +118,7 @@ class Parser:
         elif self.current_token and self.current_token.type == TokenType.CELL_IDENTIFIER:
             self.advance()
         else:
-            raise SyntaxError("Invalid factor, expected number, opening parenthesis, function or cell identifier")
+            raise ContentException("Invalid factor, expected number, opening parenthesis, function or cell identifier")
 
     def check_function(self):
         """
@@ -130,7 +131,7 @@ class Parser:
                 self.advance()
                 self.is_argument()
         else:
-            raise SyntaxError("Expected argument.")
+            raise ContentException("Expected argument.")
         self.check_closing_parenthesis()
 
     def is_argument(self):
@@ -178,13 +179,13 @@ class Parser:
         if self.current_token and self.current_token.type == TokenType.CLOSING_PARENTHESIS:
             self.advance()
         else:
-            raise SyntaxError("Expected closing parenthesis")
+            raise ContentException("Expected closing parenthesis")
 
     def check_opening_parenthesis(self):
         if self.current_token and self.current_token.type == TokenType.OPENING_PARENTHESIS:
             self.advance()
         else:
-            raise SyntaxError("Expected opening parenthesis")
+            raise ContentException("Expected opening parenthesis")
 
 
 # ======================================================================================================================
