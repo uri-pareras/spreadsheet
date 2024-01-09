@@ -65,4 +65,4 @@ class ShuntingYard:
                 operand2 = stack.pop().get_value_as_operand()
                 operand1 = stack.pop().get_value_as_operand()
                 stack.append(NumericalValue(component.compute(operand1, operand2)))
-        return stack.pop().value
+        return stack.pop().get_value_as_operand()
