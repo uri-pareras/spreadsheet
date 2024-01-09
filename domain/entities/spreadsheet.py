@@ -34,42 +34,9 @@ class Spreadsheet:
         """
         return self._cells
 
-    def add_cell(self, cell_id: str, content_str: str) -> Cell:
+    def add_cell(self, cell: Cell):
         """
         This method adds a cell to the spreadsheet.
-        If the cell is already in the spreadsheet, it is overwritten.
-
-        Keyword arguments:
-        cell_id -- the identifier of the cell (str)
-        content -- the content of the cell (str)
-        """
-        content_str = content_str.strip()
-        cell = Cell(CellIdentifier(cell_id), NumericalContent(NumericalValue(0)))  # Create a cell with a default value
-        if cell_id in self._cells:  # If the cell is already in the spreadsheet we get that cell to maintain dependencies
-            cell = self._cells.pop(cell_id)
-        if content_str.startswith("="):  # Check if it is a formula
-            formula_str = content_str[1:]
-            formula = Formula(formula_str)
-            cell.content = formula
-        else:
-            try:  # Check if it is a number
-                value_number = float(content_str)
-            except ValueError:  # If it is not a formula or a number, it is text
-                if cell.depends_on_me:  # If any cell depends on this cell, we cannot change its content to text
-                    raise ValueError("The cell cannot be changed to text because it is used in a formula.")
-                value = TextualValue(content_str)
-                content = TextualContent(value)
-                cell.content = content
-            else:
-                value = NumericalValue(value_number)
-                content = NumericalContent(value)
-                cell.content = content
-        self.__store_cell(cell)
-        return cell
-
-    def __store_cell(self, cell: Cell) -> None:
-        """
-        This method adds a cell to the _cells attribute
 
         Keyword arguments:
         cell -- the cell to be added (Cell)
