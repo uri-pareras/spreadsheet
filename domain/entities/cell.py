@@ -45,15 +45,21 @@ class CellIdentifier:
         coordinate -- the coordinate of the cell (str)
         return -- True if the coordinate is valid and False otherwise (bool)
         """
+        if not isinstance(coordinate, str):
+            raise ValueError("The coordinate must be a string.")
+        elif coordinate == "":
+            raise ValueError("The coordinate cannot be empty.")
+        
         first_number_index = len(coordinate)
         for i, c in enumerate(coordinate):
             if c.isdigit():
                 first_number_index = i
                 break
-        if first_number_index == 0:
+        if first_number_index == 0: # If the first character is a number
             raise ValueError("The column must be a string of letters.")
-        if first_number_index == len(coordinate):
+        if first_number_index == len(coordinate):  # If there is no number
             raise ValueError("The row must be a string of numbers.")
+        
         column = coordinate[:first_number_index]
         row = coordinate[first_number_index:]
         if not column.isalpha():
