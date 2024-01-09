@@ -133,7 +133,7 @@ class FormulaEvaluator(abc.ABC):
 
         return components
 
-    def generate_expression(self, formula: Cell):
+    def generate_expression(self, formula_cell: Cell):
         """
         This method generates the expression from the formula.
 
@@ -142,15 +142,14 @@ class FormulaEvaluator(abc.ABC):
         return -- the list of tokens (list)
         """
 
-        tokens = list(self.tokenizer.tokenize(formula.content.textual_representation))
+        tokens = list(self.tokenizer.tokenize(formula_cell.content.textual_representation))
         tokens = self.parser.parse(tokens)
         expression = self.convert_to_formula_components(tokens)
-        formula.depends_on = self.dependency_manager.get_dependencies(expression)
-        self.dependency_manager.update_depends_on_me_lists(formula.identifier, formula.depends_on)
-        if self.dependency_manager.detect_circular_dependencies(formula.identifier, formula):
+        formula_cell.depends_on = self.dependency_manager.get_dependencies(expression)
+        self.dependency_manager.update_depends_on_me_lists(formula_cell.identifier, formula_cell.depends_on)
+        if self.dependency_manager.detect_circular_dependencies(formula_cell.identifier, formula_cell):
             raise ValueError("Circular dependencies detected.")
-        formula.content.expression = expression
-        pass
+        formula_cell.content.expression = expression
 
     @abc.abstractmethod
     def evaluate_expression(self, formula: Cell):

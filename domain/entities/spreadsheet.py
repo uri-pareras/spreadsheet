@@ -34,7 +34,7 @@ class Spreadsheet:
         """
         return self._cells
 
-    def add_cell(self, cell_id: str, content_str: str) -> None:
+    def add_cell(self, cell_id: str, content_str: str) -> Cell:
         """
         This method adds a cell to the spreadsheet.
         If the cell is already in the spreadsheet, it is overwritten.
@@ -64,6 +64,7 @@ class Spreadsheet:
                 content = NumericalContent(value)
                 cell = Cell(CellIdentifier(cell_id), content)
         self.__store_cell(cell)
+        return cell
 
     def __store_cell(self, cell: Cell) -> None:
         """

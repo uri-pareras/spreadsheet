@@ -31,14 +31,16 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
     This class represents a spreadsheet loader.
     """
 
-    def load_spreadsheet(self, file_path: str) -> Spreadsheet:
+    def load_spreadsheet(self, file_path: str) -> list:
         """
-        This method loads the spreadsheet from a S2V file.
+        This method parses the file and returns the list of cells to be loaded to the spreadsheet.
 
         Keyword arguments:
         file_path -- the path of the file (str)
-        return -- the spreadsheet_to_load (Spreadsheet)
+        return -- the spreadsheet_to_load (lis)
         """
+        cells_to_load = []
+        file_path = file_path.strip()
         if not isinstance(file_path, str):
             raise ValueError("The file path must be a string.")
         if not file_path.endswith(".s2v"):
@@ -59,12 +61,9 @@ class SpreadsheetLoaderS2V(SpreadsheetLoader):
                             row_cells[column] = row_cells[column].replace(",", ";")
                         elif "," in row_cells[column]:
                             raise ValueError("The file is not valid.")
-                        try:
-                            spreadsheet_to_load.add_cell(int_to_base26(column) + str(row_number), row_cells[column])
-                        except:  # Any exception treated as invalid file
-                            raise ValueError("The file is not valid.")
+                        cells_to_load.append((int_to_base26(column) + str(row_number), row_cells[column]))
                 row_number += 1
-        return spreadsheet_to_load
+        return cells_to_load
 
 
 if __name__ == "__main__":

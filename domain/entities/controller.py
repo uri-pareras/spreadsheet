@@ -6,6 +6,7 @@ from domain.IO.user_interface import TextualUserInterface
 from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V
 from domain.IO.spreadsheetsaver import SpreadsheetSaverS2V
 from domain.entities.content import Formula
+from domain.entities.formula_evaluator import FormulaEvaluatorPostfix
 
 
 class Controller:
@@ -15,6 +16,7 @@ class Controller:
         """
         self._spreadsheet = Spreadsheet()
         self._user_interface = TextualUserInterface()
+        self._formula_evaluator = FormulaEvaluatorPostfix(self._spreadsheet)
         self.exit = False
 
     def run(self) -> None:
@@ -73,6 +75,7 @@ class Controller:
         This method creates a new spreadsheet.
         """
         self._spreadsheet = Spreadsheet()
+        self._formula_evaluator = FormulaEvaluatorPostfix(self._spreadsheet)
 
     def edit_cell(self, cell_identifier: str, new_content: str) -> None:
         """
@@ -82,7 +85,12 @@ class Controller:
         cell_identifier -- the identifier of the cell (str)
         new_content -- the new content of the cell (str)
         """
-        self._spreadsheet.add_cell(cell_identifier, new_content)
+        # Todo: avoid changing a cell that is used in a formula for one with text
+        cell_added = self._spreadsheet.add_cell(cell_identifier, new_content)
+        self._formula_evaluator = FormulaEvaluatorPostfix(self._spreadsheet)  # TODO: Modificar formula evaluator perque no es crei un altre cada cop que s'edita una cel·la
+        if isinstance(cell_added.content, Formula):
+            self._formula_evaluator.generate_expression(cell_added)
+            self._formula_evaluator.evaluate_expression(cell_added)
 
     def load_spreadsheet_from_file(self, file_path: str) -> None:
         """
@@ -91,8 +99,15 @@ class Controller:
         Keyword arguments:
         file_path -- the path of the file (str)
         """
-        loader = SpreadsheetLoaderS2V()
-        self._spreadsheet = loader.load_spreadsheet(file_path)
+        self._spreadsheet = Spreadsheet()  # create new spreadsheet
+        loader = SpreadsheetLoaderS2V()  # create loader
+        cells_to_load = loader.load_spreadsheet(file_path)
+        for cell in cells_to_load:
+            try:
+                self.edit_cell(cell[0], cell[1])
+            except:  # Any exception treated as invalid file
+                # raise ValueError("The file is not valid.")
+                pass
 
     def save_spreadsheet_to_file(self, file_path: str) -> None:
         """
