@@ -51,7 +51,7 @@ class DependencyManager:
         """
         This method removes the current cell from the depends_on_me lists of the cells that depend on it.
         """
-        for dependency in cell.depends_on_me:
+        for dependency in cell.depends_on:
             dep_cell = self._spreadsheet.get_cell(dependency)
             if dep_cell is not None:
                 dep_cell.depends_on_me.remove(cell.identifier)

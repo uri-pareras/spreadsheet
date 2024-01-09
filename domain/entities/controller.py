@@ -1,11 +1,13 @@
 """
 This file implements the controller of the application.
 """
+from domain.entities.cell import CellIdentifier
+from domain.entities.cell import Cell
 from domain.entities.spreadsheet import Spreadsheet
 from domain.IO.user_interface import TextualUserInterface
 from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V
 from domain.IO.spreadsheetsaver import SpreadsheetSaverS2V
-from domain.entities.content import Formula, TextualContent
+from domain.entities.content import Formula, Content, TextualContent, NumericalContent
 from domain.entities.formula_evaluator import FormulaEvaluatorPostfix
 from domain.entities.cell import CellIdentifier, Cell
 from domain.exceptions.exceptions import NoNumberException, ReadingSpreadSheetException, SavingSpreadSheetException, BadCoordinateException
@@ -88,11 +90,34 @@ class Controller(ISpreadsheetControllerForChecker):
         cell_identifier -- the identifier of the cell (str)
         new_content -- the new content of the cell (str)
         """
-        cell_added = self._spreadsheet.add_cell(cell_identifier, str(new_content))  # Castejat a str crec que hi ha un fallo al marker
-        self._formula_evaluator = FormulaEvaluatorPostfix(self._spreadsheet)  # TODO: Modificar formula evaluator perque no es crei un altre cada cop que s'edita una cel·la
-        if isinstance(cell_added.content, Formula):
-            self._formula_evaluator.generate_expression(cell_added)
-            self._formula_evaluator.evaluate_expression(cell_added)
+        content = Content.create_content(new_content)
+        if content is None:
+            raise ValueError("The content is not valid.")
+        cell = self._spreadsheet.get_cell(CellIdentifier(cell_identifier))
+        if cell is None:
+            cell = Cell(CellIdentifier(cell_identifier), content)
+            self._spreadsheet.add_cell(cell)
+            if isinstance(content, Formula):
+                self._formula_evaluator.generate_expression(cell)
+                self._formula_evaluator.evaluate_expression(cell)
+        else:
+            if cell.depends_on_me:
+                if isinstance(content, TextualContent):
+                    raise ValueError("The content can not be text because it is used in a formula.")
+                elif isinstance(content, NumericalContent):
+                    cell.content = content
+                elif isinstance(content, Formula):
+                    cell.content = content
+                    self._formula_evaluator.generate_expression(cell)
+                    self._formula_evaluator.evaluate_expression(cell)
+                for dependency in cell.depends_on_me:
+                    dependency_cell = self._spreadsheet.get_cell(dependency)
+                    self._formula_evaluator.evaluate_expression(dependency_cell)
+            else:
+                cell.content = content
+                if isinstance(content, Formula):
+                    self._formula_evaluator.generate_expression(cell)
+                    self._formula_evaluator.evaluate_expression(cell)
 
     def load_spreadsheet_from_file(self, file_path: str) -> None:
         """

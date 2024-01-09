@@ -121,7 +121,7 @@ class FormulaEvaluator(abc.ABC):
                 if cell is not None:
                     components.append(cell)
                 else:  # if it doesn't exist, create it. Dependency manager will take care of the rest
-                    self.spreadsheet.add_cell(tokens[i].value, "0")
+                    self.spreadsheet.add_cell(Cell(CellIdentifier(tokens[i].value), NumericalContent(NumericalValue(None))))
                     components.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
             elif tokens[i].type == TokenType.COLON:
                 start_cell_id = components.pop(-1)
@@ -152,6 +152,7 @@ class FormulaEvaluator(abc.ABC):
         tokens = list(self.tokenizer.tokenize(formula_cell.content.textual_representation))
         tokens = self.parser.parse(tokens)
         expression = self.convert_to_formula_components(tokens)
+        self.dependency_manager.remove_old_dependencies(formula_cell)
         formula_cell.depends_on = self.dependency_manager.get_dependencies(expression)
         self.dependency_manager.update_depends_on_me_lists(formula_cell.identifier, formula_cell.depends_on)
         if self.dependency_manager.detect_circular_dependencies(formula_cell.identifier, formula_cell):

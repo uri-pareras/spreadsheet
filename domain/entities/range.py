@@ -47,7 +47,7 @@ class Range(Argument):
             if spreadsheet.get_cell(cell_id) is not None:
                 cells.append(spreadsheet.get_cell(cell_id))
             else:
-                cells.append(Cell(cell_id, NumericalContent(NumericalValue(0))))
+                cells.append(Cell(cell_id, NumericalContent(NumericalValue(None))))
         return cells  # TODO: revisar
 
     def obtain_all_cell_ids(self) -> list:
@@ -92,5 +92,6 @@ class Range(Argument):
         """
         values = []
         for cell in self._cells:
-            values.append(cell.content.value.value)
+            value = cell.content.value.value
+            if value is not None: values.append(value)
         return values
