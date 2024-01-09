@@ -3,7 +3,9 @@ This file contains the DependencyManager class.
 """
 
 from domain.entities.spreadsheet import Spreadsheet
-from domain.entities.cell import Cell
+from domain.entities.cell import Cell, CellIdentifier
+from domain.entities.function import Function
+from domain.entities.range import Range
 
 class DependencyManager:
     """
@@ -22,7 +24,51 @@ class DependencyManager:
         """
         self._spreadsheet = spreadsheet
 
-    def detect_circular_dependencies(self, cell: Cell) -> bool:
+    def get_dependencies(self, expression: list) -> list:
+        """
+        This method returns the dependencies of an expression.
+
+        Keyword arguments:
+        expression -- the expression (list of FormulaComponents)
+        return -- the dependencies (list of CellIdentifiers)
+        """
+        dependencies = []
+        for component in expression:
+            if isinstance(component, Cell):
+                dependencies.append(component.identifier)
+            elif isinstance(component, Function):
+                for argument in component.arguments:
+                    if isinstance(argument, Cell):
+                        dependencies.append(argument.identifier)
+                    elif isinstance(argument, Range):
+                        for cell in argument.obtain_all_cell_ids():
+                            dependencies.append(cell.identifier)
+        return dependencies
+
+    def remove_old_dependencies(self, cell: Cell):
+        """
+        This method removes the current cell from the depends_on_me lists of the cells that depend on it.
+        """
+        for dependency in cell.depends_on_me:
+            dep_cell = self._spreadsheet.get_cell(dependency)
+            if dep_cell is not None:
+                dep_cell.depends_on_me.remove(cell.identifier)
+
+    def update_depends_on_me_lists(self, new_formula: CellIdentifier, dependencies: list) -> None:
+        """
+        This method updates the dependencies of the cells that depend on the new_formula.
+
+        Keyword arguments:
+        new_formula -- the new formula (CellIdentifier)
+        dependencies -- the dependencies of the new formula (list of CellIdentifiers)
+        """
+        for dep_id in dependencies:
+            dep_cell = self._spreadsheet.get_cell(dep_id)
+            if dep_cell is not None:
+                if new_formula not in dep_cell.depends_on_me:
+                    dep_cell.add_dependency(new_formula)
+
+    def detect_circular_dependencies(self, origin_cell: CellIdentifier, cell: Cell) -> bool:
         """
         This method detects circular dependencies.
 
@@ -30,11 +76,11 @@ class DependencyManager:
         cell -- the cell containing the new Formula to check (Cell)
         return -- True if there are circular dependencies, False otherwise (bool)
         """
-        dependencies = cell.dependencies
+        dependencies = cell.depends_on_me
         for dependency in dependencies:
-            if dependency.identifier.coordinate == cell.identifier.coordinate:
+            if dependency == origin_cell:
                 return True
             else:
-                return self.detect_circular_dependencies(dependency)
+                return self.detect_circular_dependencies(origin_cell, self._spreadsheet.get_cell(dependency))
 
         return False
