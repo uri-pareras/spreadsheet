@@ -15,7 +15,7 @@ from domain.entities.function import Suma, Max, Min, Promedio
 from domain.utils.shunting_yard_algorithm import ShuntingYard
 from domain.utils.dependency_manager import DependencyManager
 from domain.entities.cell import Cell
-from domain.entities.content import Formula
+from domain.entities.content import Formula, NumericalContent
 
 
 class FormulaEvaluator(abc.ABC):
@@ -70,12 +70,16 @@ class FormulaEvaluator(abc.ABC):
                         i].type == TokenType.CLOSING_PARENTHESIS:
                         raise ValueError("Operations are not allowed in function arguments.")
                     elif tokens[i].type == TokenType.CELL_IDENTIFIER:
-                        argument.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
+                        c = self.spreadsheet.get_cell(CellIdentifier(tokens[i].value))
+                        if c is not None:
+                            argument.append(c)
+                        else:
+                            argument.append(Cell(CellIdentifier(tokens[i].value), NumericalContent(NumericalValue(0))))
                     elif tokens[i].type == TokenType.COLON:
-                        start_arg_cell_id = argument.pop(-1)
-                        end_arg_cell_id = self.spreadsheet.get_cell(CellIdentifier(tokens[i + 1].value))
+                        start_arg_cell_id = argument.pop(-1).identifier
+                        end_arg_cell_id = CellIdentifier(tokens[i + 1].value)
                         i += 1
-                        if isinstance(start_cell_id, CellIdentifier) and isinstance(end_cell_id, CellIdentifier):
+                        if isinstance(start_arg_cell_id, CellIdentifier) and isinstance(end_arg_cell_id, CellIdentifier):
                             argument.append(Range(start_arg_cell_id, end_arg_cell_id, self.spreadsheet))
                         else:
                             raise ValueError("The start and end of the range must be cells.")
@@ -129,7 +133,7 @@ class FormulaEvaluator(abc.ABC):
 
         return components
 
-    def generate_expression(self, formula: Cell) -> list:
+    def generate_expression(self, formula: Cell):
         """
         This method generates the expression from the formula.
 
@@ -139,15 +143,17 @@ class FormulaEvaluator(abc.ABC):
         """
 
         tokens = list(self.tokenizer.tokenize(formula.content.textual_representation))
-        print(tokens)
         tokens = self.parser.parse(tokens)
         expression = self.convert_to_formula_components(tokens)
-        if self.dependency_manager.detect_circular_dependencies(formula):
+        formula.depends_on = self.dependency_manager.get_dependencies(expression)
+        self.dependency_manager.update_depends_on_me_lists(formula.identifier, formula.depends_on)
+        if self.dependency_manager.detect_circular_dependencies(formula.identifier, formula):
             raise ValueError("Circular dependencies detected.")
-        return expression
+        formula.content.expression = expression
+        pass
 
     @abc.abstractmethod
-    def evaluate_expression(self, formula: list) -> float:
+    def evaluate_expression(self, formula: Cell):
         """
         This method evaluates the formula.
 
@@ -166,7 +172,7 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
     def __init__(self,  spreadsheet: Spreadsheet) -> None:
         super().__init__(spreadsheet)
 
-    def evaluate_expression(self, formula: list) -> float:
+    def evaluate_expression(self, formula: Cell):
         """
         This method evaluates the formula.
 
@@ -175,37 +181,80 @@ class FormulaEvaluatorPostfix(FormulaEvaluator):
         return -- the result of the evaluation (float)
         """
 
-        postfix_expression = self.shunting_yard.generate_postfix_expression(formula)
-        return self.shunting_yard.evaluate_postfix_expression(postfix_expression)
+        postfix = self.shunting_yard.generate_postfix_expression(formula.content.expression)
+        formula.content.value = NumericalValue(self.shunting_yard.evaluate_postfix_expression(postfix))
         pass
 
 
 if __name__ == "__main__":
     # Test generate_postfix_expression()
-    # expr = [Parenthesis(opens=True), NumericalValue(5), Operator("*"), NumericalValue(4), Operator("+"),
-    #         NumericalValue(3), Operator("*"), NumericalValue(2), Parenthesis(opens=False), Operator("-"),
-    #         NumericalValue(1)]
     s = Spreadsheet()
-    form_eval = FormulaEvaluatorPostfix(s)
+    fe = FormulaEvaluatorPostfix(s)
+    s.add_cell(Cell(CellIdentifier("B1"), NumericalContent(NumericalValue(5))))
+    s.add_cell(Cell(CellIdentifier("B2"), NumericalContent(NumericalValue(3))))
 
-    formula = Cell(CellIdentifier("A1"), Formula("(5*4+3*2)-MAX(4;MIN(2;3))"))
-    # s.add_cell(formula)
-    expr = form_eval.generate_expression(formula)
+    s.add_cell(Cell(CellIdentifier("D2"), Formula("4-B2")))
+    fe.generate_expression(s.get_cell(CellIdentifier("D2")))
+    fe.evaluate_expression(s.get_cell(CellIdentifier("D2")))
 
-    # tokens_list = [Token(TokenType.OPENING_PARENTHESIS,"("), Token(TokenType.NUMBER,"5"),
-    #                Token(TokenType.OPERATOR,"*"), Token(TokenType.NUMBER, "4"), Token(TokenType.OPERATOR, "+"),
-    #                Token(TokenType.NUMBER,"3"), Token(TokenType.OPERATOR,"*"),
-    #                Token(TokenType.NUMBER,"2"),Token(TokenType.CLOSING_PARENTHESIS, ")"),
-    #                Token(TokenType.OPERATOR,"-"), Token(TokenType.OPERATOR,"1")]
-    # expr = f.convert_to_formula_components(tokens_list)
-    postfix_expr = form_eval.shunting_yard.generate_postfix_expression(expr)
-    for item in postfix_expr:
-        try:
-            print(item.value)
-        except AttributeError:
-            try:
-                print(item._type)
-            except AttributeError:
-                print("()")
-    print("RESULT:")
-    print(form_eval.evaluate_expression(expr))
+    formula = Cell(CellIdentifier("A1"), Formula("(B1*D2+3*2)-MAX(4;MIN(B1:C2))"))
+    s.add_cell(formula)
+    fe.generate_expression(formula)
+    fe.evaluate_expression(formula)
+
+    s.add_cell(Cell(CellIdentifier("D3"), Formula("A1")))
+    fe.generate_expression(s.get_cell(CellIdentifier("D3")))
+    fe.evaluate_expression(s.get_cell(CellIdentifier("D3")))
+
+    # for item in postfix_expr:
+    #     try:
+    #         print(item.value)
+    #     except AttributeError:
+    #         try:
+    #             print(item._type)
+    #         except AttributeError:
+    #             print("()")
+    print("RESULTS:")
+    print("A1:", formula.content.value.value)
+    print("B1:", s.get_cell(CellIdentifier("B1")).content.value.value)
+    print("B2:", s.get_cell(CellIdentifier("B2")).content.value.value)
+    print("D2:", s.get_cell(CellIdentifier("D2")).content.value.value)
+    print("D3:", s.get_cell(CellIdentifier("D3")).content.value.value)
+
+    ### Test Dependency Manager
+    # s = Spreadsheet()
+    # fe = FormulaEvaluatorPostfix(s)
+    # s.add_cell(Cell(CellIdentifier("B1"), NumericalContent(NumericalValue(1))))
+    # s.add_cell(Cell(CellIdentifier("B2"), Formula("B1+1")))
+    # s.add_cell(Cell(CellIdentifier("B3"), Formula("4-B2 + MAX(E1:F5)")))
+    # s.add_cell(Cell(CellIdentifier("B4"), Formula("B3")))
+    # fe.generate_expression(s.get_cell(CellIdentifier("B2")))
+    # fe.generate_expression(s.get_cell(CellIdentifier("B3")))
+    # fe.generate_expression(s.get_cell(CellIdentifier("B4")))
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B2")))
+    # print("B1 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B1")).depends_on_me]
+    # print()
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B3")))
+    # print("B2 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B2")).depends_on_me]
+    # print()
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B4")))
+    # print("B3 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B3")).depends_on_me]
+    # print()
+    # s.get_cell(CellIdentifier("B2")).content = Formula("B4")
+    # fe.generate_expression(s.get_cell(CellIdentifier("B2")))
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B2")))
+    # print("CIRCULARITY")
+    # print("B1 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B1")).depends_on_me]
+    # print()
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B3")))
+    # print("B2 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B2")).depends_on_me]
+    # print()
+    # fe.evaluate_expression(s.get_cell(CellIdentifier("B4")))
+    # print("B3 depends on me:")
+    # [print(d.coordinate, end=' ') for d in s.get_cell(CellIdentifier("B3")).depends_on_me]
+    # print()
