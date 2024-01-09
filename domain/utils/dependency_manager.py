@@ -7,6 +7,7 @@ from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.function import Function
 from domain.entities.range import Range
 
+
 class DependencyManager:
     """
     This class is responsible for managing the dependencies and detecting circular dependencies.

@@ -114,6 +114,7 @@ class CellIdentifier:
         """
         return hash(self.coordinate)
 
+
 class Cell(Argument, Operand):
     """
     This class represents a cell.
