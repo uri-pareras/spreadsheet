@@ -2,7 +2,7 @@
 This file contains the Cell class.
 """
 
-from domain.entities.content import Content, NumericalContent
+from domain.entities.content import Content, NumericalContent, Formula
 from domain.entities.argument import Argument
 from domain.entities.operand import Operand
 import re
@@ -49,15 +49,17 @@ class CellIdentifier:
             raise ValueError("The coordinate must be a string.")
         elif coordinate == "":
             raise ValueError("The coordinate cannot be empty.")
-        first_number_index = -1
+        
+        first_number_index = len(coordinate)
         for i, c in enumerate(coordinate):
             if c.isdigit():
                 first_number_index = i
                 break
-        if first_number_index == 0:  # If the first character is a number
-            raise ValueError("Column must be a string of letters.")
-        if first_number_index == - 1:  # If there is no number
+        if first_number_index == 0: # If the first character is a number
+            raise ValueError("The column must be a string of letters.")
+        if first_number_index == len(coordinate):  # If there is no number
             raise ValueError("The row must be a string of numbers.")
+        
         column = coordinate[:first_number_index]
         row = coordinate[first_number_index:]
         if not column.isalpha():
@@ -97,6 +99,20 @@ class CellIdentifier:
         """
         return self._row
 
+    def __eq__(self, other):
+        """
+        This method checks if two cell identifiers are equal.
+        """
+        if isinstance(other, CellIdentifier):
+            return self.coordinate == other.coordinate
+        else:
+            return False
+
+    def __hash__(self):
+        """
+        This method returns the hash of the cell identifier.
+        """
+        return hash(self.coordinate)
 
 class Cell(Argument, Operand):
     """
@@ -118,6 +134,7 @@ class Cell(Argument, Operand):
         self._identifier = identifier
         self._content = content
         self._depends_on_me = []
+        self._depends_on = []
     
     @property
     def identifier(self):
@@ -152,14 +169,14 @@ class Cell(Argument, Operand):
         self._content = content
 
     @property
-    def dependencies(self):
+    def depends_on_me(self):
         """
         Getter for dependencies.
         """
         return self._depends_on_me
     
-    @dependencies.setter
-    def dependencies(self, dependencies):
+    @depends_on_me.setter
+    def depends_on_me(self, dependencies):
         """
         Setter for dependencies.
         """
@@ -167,15 +184,31 @@ class Cell(Argument, Operand):
             raise ValueError("The dependencies must be a list.")
         self._depends_on_me = dependencies
 
+    @property
+    def depends_on(self):
+        """
+        Getter for dependencies.
+        """
+        return self._depends_on
+
+    @depends_on.setter
+    def depends_on(self, dependencies):
+        """
+        Setter for dependencies.
+        """
+        if not isinstance(dependencies, list):
+            raise ValueError("The dependencies must be a list.")
+        self._depends_on = dependencies
+
     def add_dependency(self, dependency: CellIdentifier):
         """
-        This method adds a dependency to the attribute _dependencies.
+        This method adds a dependency to the attribute _depends_on_me.
 
         keyword arguments:
         dependency -- the dependency to add (CellIdentifier)
         """
-        if not isinstance(dependency, CellIdentifier):  # TODO: CellIdentifier or Cell?
-            raise ValueError("The dependency must be a CellIdentifier.")
+        if not isinstance(dependency, CellIdentifier):
+            raise ValueError("The dependency must be a Cell.")
         self._depends_on_me.append(dependency)
     
     def remove_dependency(self, dependency: CellIdentifier):
@@ -197,7 +230,7 @@ class Cell(Argument, Operand):
         return -- the values of the cell (list)
         """
         if isinstance(self._content, NumericalContent):
-            return [self._content.value]
+            return [self._content.value.value]
         else:  # This is redundant, but it is here to make it clear
             raise ValueError("The content must be a NumericalContent.")
     
@@ -208,7 +241,7 @@ class Cell(Argument, Operand):
         Keyword arguments:
         return -- the value of the cell (float)
         """
-        if isinstance(self._content, NumericalContent):
-            return self._content.value
+        if isinstance(self._content, NumericalContent) or isinstance(self._content, Formula):
+            return self._content.value.value
         else:
             raise ValueError("The content must be a NumericalContent.")
