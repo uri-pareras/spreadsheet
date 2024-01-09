@@ -42,6 +42,27 @@ class Content(abc.ABC):
             raise ValueError("The value must be a Value.")
         self._value = value
 
+    @staticmethod
+    def create_content(content_str: str) -> 'Content':
+        """
+        This method creates a content from a string.
+
+        Keyword arguments:
+        content_str -- the string to be converted to content (str)
+        return -- the content (Content)
+        """
+        output_content = None
+        content_str = content_str.strip()
+        if content_str.startswith("="):
+            formula_str = content_str[1:]
+            output_content = Formula(formula_str)
+        else:
+            try:
+                value_number = float(content_str)
+                output_content = NumericalContent(NumericalValue(value_number))
+            except ValueError:
+                output_content = TextualContent(TextualValue(content_str))
+        return output_content
 
 class TextualContent(Content):
     """
