@@ -52,7 +52,7 @@ class Content(abc.ABC):
         return -- the content (Content)
         """
         output_content = None
-        content_str = content_str.strip()
+        content_str = str(content_str).strip()
         if content_str.startswith("="):
             formula_str = content_str[1:]
             output_content = Formula(formula_str)
