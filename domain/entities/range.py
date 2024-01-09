@@ -5,7 +5,9 @@ This file contains the Range class.
 from domain.entities.argument import Argument
 from domain.entities.cell import CellIdentifier
 from domain.entities.spreadsheet import Spreadsheet
-
+from domain.entities.cell import Cell
+from domain.entities.content import NumericalContent
+from domain.entities.value import NumericalValue
 
 class Range(Argument):
     """
@@ -39,11 +41,27 @@ class Range(Argument):
         return -- the cells of the range (list)
         """
         cells = []
+        cell_ids = self.obtain_all_cell_ids()
+        for cell_id in cell_ids:
+            if spreadsheet.get_cell(cell_id) is not None:
+                cells.append(spreadsheet.get_cell(cell_id))
+            else:
+                cells.append(Cell(cell_id, NumericalContent(NumericalValue(0))))
+        return cells  # TODO: revisar
+
+    def obtain_all_cell_ids(self) -> list:
+        """
+        This method returns the cell identifiers of the cells in the range.
+
+        Keyword arguments:
+        return -- the cell identifiers (list)
+        """
+        cell_ids = []
         columns = self.__generate_column_range(self._start.column, self._end.column)
         for column in columns:
-            for row in range(self._start.row, self._end.row + 1):
-                cells.append(spreadsheet.get_cell(CellIdentifier(str(column) + str(row))))
-        return cells  # TODO: revisar
+            for row in range(int(self._start.row), int(self._end.row) + 1):
+                cell_ids.append(CellIdentifier(str(column) + str(row)))
+        return cell_ids
 
     @staticmethod
     def __generate_column_range(start_column, end_column):
@@ -89,5 +107,5 @@ class Range(Argument):
         """
         values = []
         for cell in self._cells:
-            values.append(cell.content.value)
+            values.append(cell.content.value.value)
         return values
