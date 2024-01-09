@@ -1,5 +1,6 @@
 C
 e A1 4
 e A2 6
+e A5 =A1+A2
 e A3 holaquease
 e A4 8

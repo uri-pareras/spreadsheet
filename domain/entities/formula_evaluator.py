@@ -73,8 +73,9 @@ class FormulaEvaluator(abc.ABC):
                         c = self.spreadsheet.get_cell(CellIdentifier(tokens[i].value))
                         if c is not None:
                             argument.append(c)
-                        else:
-                            argument.append(Cell(CellIdentifier(tokens[i].value), NumericalContent(NumericalValue(0))))
+                        else:  # if it doesn't exist, create it. Dependency manager will take care of the rest
+                            self.spreadsheet.add_cell(tokens[i].value, "0")
+                            argument.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
                     elif tokens[i].type == TokenType.COLON:
                         start_arg_cell_id = argument.pop(-1).identifier
                         end_arg_cell_id = CellIdentifier(tokens[i + 1].value)
@@ -115,7 +116,12 @@ class FormulaEvaluator(abc.ABC):
             elif tokens[i].type == TokenType.CLOSING_PARENTHESIS:
                 components.append(Parenthesis(opens=False))
             elif tokens[i].type == TokenType.CELL_IDENTIFIER:
-                components.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
+                cell = self.spreadsheet.get_cell(CellIdentifier(tokens[i].value))
+                if cell is not None:
+                    components.append(cell)
+                else:  # if it doesn't exist, create it. Dependency manager will take care of the rest
+                    self.spreadsheet.add_cell(tokens[i].value, "0")
+                    components.append(self.spreadsheet.get_cell(CellIdentifier(tokens[i].value)))
             elif tokens[i].type == TokenType.COLON:
                 start_cell_id = components.pop(-1)
                 end_cell_id = self.spreadsheet.get_cell(CellIdentifier(tokens[i + 1].value))
