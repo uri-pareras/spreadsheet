@@ -190,19 +190,18 @@ if __name__ == "__main__":
     # Test generate_postfix_expression()
     s = Spreadsheet()
     fe = FormulaEvaluatorPostfix(s)
-    s.add_cell(Cell(CellIdentifier("B1"), NumericalContent(NumericalValue(5))))
-    s.add_cell(Cell(CellIdentifier("B2"), NumericalContent(NumericalValue(3))))
+    s.add_cell("B1", "5")
+    s.add_cell("B2", "3")
 
-    s.add_cell(Cell(CellIdentifier("D2"), Formula("4-B2")))
+    s.add_cell("D2", "=4-B2")
     fe.generate_expression(s.get_cell(CellIdentifier("D2")))
     fe.evaluate_expression(s.get_cell(CellIdentifier("D2")))
 
-    formula = Cell(CellIdentifier("A1"), Formula("(B1*D2+3*2)-MAX(4;MIN(B1:C2))"))
-    s.add_cell(formula)
-    fe.generate_expression(formula)
-    fe.evaluate_expression(formula)
+    s.add_cell("A1","=(B1*D2+3*2)-MAX(4;MIN(B1:C2))")
+    fe.generate_expression(s.get_cell(CellIdentifier("A1")))
+    fe.evaluate_expression(s.get_cell(CellIdentifier("A1")))
 
-    s.add_cell(Cell(CellIdentifier("D3"), Formula("A1")))
+    s.add_cell("D3","=A1")
     fe.generate_expression(s.get_cell(CellIdentifier("D3")))
     fe.evaluate_expression(s.get_cell(CellIdentifier("D3")))
 
@@ -215,7 +214,7 @@ if __name__ == "__main__":
     #         except AttributeError:
     #             print("()")
     print("RESULTS:")
-    print("A1:", formula.content.value.value)
+    print("A1:", s.get_cell(CellIdentifier("A1")).content.value.value)
     print("B1:", s.get_cell(CellIdentifier("B1")).content.value.value)
     print("B2:", s.get_cell(CellIdentifier("B2")).content.value.value)
     print("D2:", s.get_cell(CellIdentifier("D2")).content.value.value)
