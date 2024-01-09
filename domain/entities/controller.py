@@ -31,6 +31,8 @@ class Controller:
         """
 
         match command[0]:
+            case "RF":
+                pass  # If the command is RF, wait for the next command
             case "C":
                 self.create_new_spreadsheet()
                 self.render_spreadsheet()
