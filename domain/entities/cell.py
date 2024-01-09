@@ -232,6 +232,8 @@ class Cell(Argument, Operand):
         return -- the values of the cell (list)
         """
         if isinstance(self._content, NumericalContent):
+            if self._content.value.value is None:
+                return []
             return [self._content.value.value]
         else:  # This is redundant, but it is here to make it clear
             raise ValueError("The content must be a NumericalContent.")

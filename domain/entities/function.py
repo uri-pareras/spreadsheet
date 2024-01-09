@@ -55,7 +55,10 @@ class Function(Argument, Operand, abc.ABC):
         Keyword arguments:
         return -- the value of the function (Value)??
         """
-        return self.compute()
+        output = self.compute()
+        if output is None:
+            return None
+        return output
 
     def get_values_as_argument(self):
         """
@@ -64,6 +67,9 @@ class Function(Argument, Operand, abc.ABC):
         Keyword arguments:
         return -- the values of the function (list)
         """
+        output = self.compute()
+        if output is None:
+            return []
         return [self.compute()]
 
 
@@ -92,6 +98,8 @@ class Max(Function):  # TODO: REVISAR Argument and get_values_as_argument??
         """
 
         values = self.obtain_values_from_arguments()
+        if len(values) == 0:
+            return None
         max_value = values[0]
         for argument in values:
             if argument > max_value:
@@ -123,6 +131,8 @@ class Min(Function):
         return -- the minimum value of the arguments (float)
         """
         values = self.obtain_values_from_arguments()
+        if len(values) == 0:
+            return None
         min_value = values[0]
         for argument in values:
             if argument < min_value:
@@ -155,6 +165,8 @@ class Suma(Function):
         """
         suma = 0
         values = self.obtain_values_from_arguments()
+        if len(values) == 0:
+            return None
         for argument in values:
             suma = suma + argument
         return suma
@@ -182,6 +194,8 @@ class Promedio(Function):
         """
         suma = 0
         values = self.obtain_values_from_arguments()
+        if len(values) == 0:
+            return None
         for argument in values:
             suma = suma + argument
         return suma/len(values)
