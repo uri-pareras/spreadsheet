@@ -179,7 +179,7 @@ class Controller(ISpreadsheetControllerForChecker):
         """
         cell = self._spreadsheet.get_cell(CellIdentifier(coord))  # This must raise the BadCoordinateException
         if cell is None:
-            raise BadCoordinateException("The cell does not exist.")
+            return ""
         if cell.content.value.value is None:
             return ""
         return str(cell.content.value.value)
