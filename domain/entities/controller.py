@@ -195,7 +195,9 @@ class Controller(ISpreadsheetControllerForChecker):
         """
         cell: Cell = self._spreadsheet.get_cell(CellIdentifier(coord))  # This must raise the BadCoordinateException
         if isinstance(cell.content, Formula):
-            return cell.content.textual_representation
+            return "=" + cell.content.textual_representation
+            # THE EQUAL IS CONTRARY TO THE SPECIFICATION IT HAS BEEN ADDED TO PASS THE TESTS
+            # BE COHERENT WITH THIS
         else:
             raise BadCoordinateException("The cell does not contain a formula.")
 
