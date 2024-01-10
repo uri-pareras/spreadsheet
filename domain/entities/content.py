@@ -151,7 +151,7 @@ class Formula(Content):
         textual_representation -- the textual representation of the formula (str)
         expression -- the expression of the formula (list of FormulaComponents)
         """
-        super().__init__(None)
+        super().__init__(NumericalValue(None))
         self._textual_representation = textual_representation
         self._expression = []
 

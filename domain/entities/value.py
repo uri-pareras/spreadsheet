@@ -134,6 +134,8 @@ class NumericalValue(Value, Argument, Operand):
         Keyword arguments:
         return -- the value as a string (str)
         """
+        if self._value is None:
+            return ""
         if self._value == int(self._value):
             return str(int(self._value))
         else:

@@ -161,7 +161,7 @@ class Controller(ISpreadsheetControllerForChecker):
         """
         cell = self._spreadsheet.get_cell(CellIdentifier(coord))
         try:
-            float(cell.content.value.value)
+            return float(cell.content.value.value)
         except ValueError:
             raise NoNumberException("The cell does not contain a number.")
 
@@ -178,6 +178,10 @@ class Controller(ISpreadsheetControllerForChecker):
         number resulting of evaluating such formula.
         """
         cell = self._spreadsheet.get_cell(CellIdentifier(coord))  # This must raise the BadCoordinateException
+        if cell is None:
+            raise BadCoordinateException("The cell does not exist.")
+        if cell.content.value.value is None:
+            return ""
         return str(cell.content.value.value)
 
     def get_cell_formula_expression(self, coord: str) -> str:

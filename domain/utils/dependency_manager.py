@@ -1,11 +1,12 @@
 """
 This file contains the DependencyManager class.
 """
-
+from domain.entities.content import NumericalContent
 from domain.entities.spreadsheet import Spreadsheet
 from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.function import Function
 from domain.entities.range import Range
+from domain.entities.value import NumericalValue
 from domain.exceptions.exceptions import CircularDependencyException
 
 
@@ -69,6 +70,9 @@ class DependencyManager:
             if dep_cell is not None:
                 if new_formula not in dep_cell.depends_on_me:
                     dep_cell.add_dependency(new_formula)
+            else:
+                self._spreadsheet.add_cell(Cell(dep_id, NumericalContent(NumericalValue(None))))
+                self._spreadsheet.get_cell(dep_id).add_dependency(new_formula)
 
     def detect_circular_dependencies(self, origin_cell: CellIdentifier, cell: Cell) -> bool:
         """
