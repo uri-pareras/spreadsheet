@@ -6,7 +6,7 @@ from domain.entities.content import Content, NumericalContent, Formula
 from domain.entities.argument import Argument
 from domain.entities.operand import Operand
 import re
-from domain.exceptions.exceptions import BadCoordinateException
+from test.entities.bad_coordinate_exception import BadCoordinateException
 
 
 class CellIdentifier:

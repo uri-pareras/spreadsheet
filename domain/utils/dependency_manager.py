@@ -7,7 +7,7 @@ from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.function import Function
 from domain.entities.range import Range
 from domain.entities.value import NumericalValue
-from entities.circular_dependency_exception import CircularDependencyException
+from test.entities.circular_dependency_exception import CircularDependencyException
 
 class DependencyManager:
     """

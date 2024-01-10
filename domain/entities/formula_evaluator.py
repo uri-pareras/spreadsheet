@@ -10,15 +10,14 @@ from domain.entities.value import NumericalValue
 from domain.entities.spreadsheet import Spreadsheet
 from domain.entities.cell import CellIdentifier
 from domain.entities.range import Range
-from domain.utils.tokenizer import TokenType, Token
+from domain.utils.tokenizer import TokenType
 from domain.entities.function import Suma, Max, Min, Promedio
 from domain.utils.shunting_yard_algorithm import ShuntingYard
 from domain.utils.dependency_manager import DependencyManager
 from domain.entities.cell import Cell
-from domain.entities.content import Formula, NumericalContent
+from domain.entities.content import NumericalContent
 # from domain.exceptions.exceptions import CircularDependencyException, ContentException
-from entities.circular_dependency_exception import CircularDependencyException
-from entities.content_exception import ContentException
+from test.entities.content_exception import ContentException
 
 
 class FormulaEvaluator(abc.ABC):

@@ -9,13 +9,13 @@ class TestRunner:
 
     def __init__(self):
         self.toBeRun = [
-"markerrun.text_content_test.TextContentTest", \
-"markerrun.number_content_test.NumberContentTest", \
-"markerrun.formula_content_test.FormulaContentTest", \
-"markerrun.dependent_cells_test.DependentCellsTest", \
-"markerrun.circular_dependencies_test.CircularDependenciesTest", \
-"markerrun.save_test.SaveTest", \
-"markerrun.load_test.LoadTest" \
+"test.markerrun.text_content_test.TextContentTest", \
+"test.markerrun.number_content_test.NumberContentTest", \
+"test.markerrun.formula_content_test.FormulaContentTest", \
+"test.markerrun.dependent_cells_test.DependentCellsTest", \
+"test.markerrun.circular_dependencies_test.CircularDependenciesTest", \
+"test.markerrun.save_test.SaveTest", \
+"test.markerrun.load_test.LoadTest" \
             ]
         self.porcentajes = [3,3,39,15,10,12.5,12.5]
         self.clasesAPorcentajes = {} #mapa <string (clase),float (porcentaje)>

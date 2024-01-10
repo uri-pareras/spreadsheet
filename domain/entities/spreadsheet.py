@@ -3,9 +3,6 @@ This file contains the spreadsheet class.
 """
 
 from domain.entities.cell import Cell, CellIdentifier
-from domain.entities.content import Content, NumericalContent, TextualContent, Formula
-from domain.entities.value import NumericalValue, TextualValue
-from domain.exceptions.exceptions import ContentException, BadCoordinateException
 
 
 class Spreadsheet:

@@ -1,17 +1,16 @@
 """
 This file implements the controller of the application.
 """
-from domain.entities.cell import CellIdentifier
-from domain.entities.cell import Cell
 from domain.entities.spreadsheet import Spreadsheet
-from domain.IO.user_interface import TextualUserInterface
-from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V
-from domain.IO.spreadsheetsaver import SpreadsheetSaverS2V
+from IO.user_interface import TextualUserInterface
+from use_cases.spreadsheetloader import SpreadsheetLoaderS2V
+from use_cases.spreadsheetsaver import SpreadsheetSaverS2V
 from domain.entities.content import Formula, Content, TextualContent, NumericalContent
 from domain.entities.formula_evaluator import FormulaEvaluatorPostfix
 from domain.entities.cell import CellIdentifier, Cell
-from domain.exceptions.exceptions import NoNumberException, ReadingSpreadSheetException, SavingSpreadSheetException, BadCoordinateException
-from usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
+from test.entities.no_number_exception import NoNumberException
+from test.entities.bad_coordinate_exception import BadCoordinateException
+from test.usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
 
 
 class Controller(ISpreadsheetControllerForChecker):

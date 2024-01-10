@@ -2,7 +2,7 @@
 This file contains the Parser class implementation.
 """
 from domain.utils.tokenizer import Token, TokenType, Tokenizer
-from domain.exceptions.exceptions import ContentException
+from test.entities.content_exception import ContentException
 
 
 class Parser:

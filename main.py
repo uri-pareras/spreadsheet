@@ -3,7 +3,7 @@ Authors: Marc Micolau & Oriol Pareras
 Date: 24/11/2020
 Description: This is the main file of the spreadsheet project.
 """
-from domain.entities.controller import Controller
+from controller.controller import Controller
 
 
 def main() -> None:

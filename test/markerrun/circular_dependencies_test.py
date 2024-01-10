@@ -1,7 +1,7 @@
 import traceback
-from markerrun.ClasesCorrector import SuperClassForTests
-from usecasesmarker.spread_sheet_factory_for_checker import SpreadSheetFactoryForChecker
-from entities.circular_dependency_exception import CircularDependencyException
+from test.markerrun.ClasesCorrector import SuperClassForTests
+from test.usecasesmarker.spread_sheet_factory_for_checker import SpreadSheetFactoryForChecker
+from test.entities.circular_dependency_exception import CircularDependencyException
 
 
 class CircularDependenciesTest(SuperClassForTests):

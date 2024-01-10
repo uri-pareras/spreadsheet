@@ -1,5 +1,5 @@
-from usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
-from domain.entities.controller import Controller
+from test.usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
+from controller.controller import Controller
 
 class SpreadSheetFactoryForChecker:
 

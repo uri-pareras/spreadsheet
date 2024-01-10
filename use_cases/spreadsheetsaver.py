@@ -7,7 +7,7 @@ import abc
 from domain.utils.utils import base26_to_int
 from domain.entities.content import Formula, NumericalContent, TextualContent
 from domain.entities.spreadsheet import Spreadsheet
-from domain.IO.spreadsheetloader import SpreadsheetLoaderS2V  # Only for testing
+from use_cases.spreadsheetloader import SpreadsheetLoaderS2V  # Only for testing
 
 
 class SpreadsheetSaver(abc.ABC):
