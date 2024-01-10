@@ -16,7 +16,9 @@ from domain.utils.shunting_yard_algorithm import ShuntingYard
 from domain.utils.dependency_manager import DependencyManager
 from domain.entities.cell import Cell
 from domain.entities.content import Formula, NumericalContent
-from domain.exceptions.exceptions import CircularDependencyException, ContentException
+# from domain.exceptions.exceptions import CircularDependencyException, ContentException
+from entities.circular_dependency_exception import CircularDependencyException
+from entities.content_exception import ContentException
 
 
 class FormulaEvaluator(abc.ABC):
@@ -155,8 +157,7 @@ class FormulaEvaluator(abc.ABC):
         self.dependency_manager.remove_old_dependencies(formula_cell)
         formula_cell.depends_on = self.dependency_manager.get_dependencies(expression)
         self.dependency_manager.update_depends_on_me_lists(formula_cell.identifier, formula_cell.depends_on)
-        if self.dependency_manager.detect_circular_dependencies(formula_cell.identifier, formula_cell):
-            raise CircularDependencyException("Circular dependencies detected.")
+        self.dependency_manager.detect_circular_dependencies(formula_cell.identifier, formula_cell)
         formula_cell.content.expression = expression
 
     @abc.abstractmethod

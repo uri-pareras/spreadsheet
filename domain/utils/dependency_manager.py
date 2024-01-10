@@ -7,8 +7,7 @@ from domain.entities.cell import Cell, CellIdentifier
 from domain.entities.function import Function
 from domain.entities.range import Range
 from domain.entities.value import NumericalValue
-from domain.exceptions.exceptions import CircularDependencyException
-
+from entities.circular_dependency_exception import CircularDependencyException
 
 class DependencyManager:
     """
@@ -74,7 +73,7 @@ class DependencyManager:
                 self._spreadsheet.add_cell(Cell(dep_id, NumericalContent(NumericalValue(None))))
                 self._spreadsheet.get_cell(dep_id).add_dependency(new_formula)
 
-    def detect_circular_dependencies(self, origin_cell: CellIdentifier, cell: Cell) -> bool:
+    def detect_circular_dependencies(self, origin_cell: CellIdentifier, cell: Cell):
         """
         This method detects circular dependencies.
 
@@ -85,8 +84,6 @@ class DependencyManager:
         dependencies = cell.depends_on_me
         for dependency in dependencies:
             if dependency == origin_cell:
-                return True
-            else:
-                return self.detect_circular_dependencies(origin_cell, self._spreadsheet.get_cell(dependency))
-
-        return False
+                raise CircularDependencyException("Circular dependency detected.")
+        for dependency in dependencies:
+            self.detect_circular_dependencies(origin_cell, self._spreadsheet.get_cell(dependency))
